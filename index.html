@@ -74,7 +74,10 @@ header.site.scrolled{box-shadow:0 8px 30px -18px rgba(11,37,69,.45);}
 @media(max-width:960px){.nav-links{position:fixed;top:68px;left:0;right:0;background:var(--crema);flex-direction:column;padding:1.5rem;gap:1.1rem;border-bottom:1px solid var(--borde);transform:translateY(-140%);transition:transform .35s;}.nav-links.open{transform:translateY(0);}.nav-toggle{display:block;}}
 
 /* HERO */
-.hero{position:relative;padding:9rem 0 4rem;color:#fff;overflow:hidden;background:linear-gradient(160deg,var(--tinta) 0%,#123A63 55%,var(--cancha-fuerte) 130%);}
+.hero{position:relative;padding:10rem 0 5.5rem;color:#fff;overflow:hidden;min-height:88vh;display:flex;align-items:center;
+  background-image:linear-gradient(160deg,rgba(11,37,69,.92) 0%,rgba(18,58,99,.88) 50%,rgba(15,78,49,.9) 130%),
+    url('https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/banner%20web%20deporte.jpg');
+  background-size:cover;background-position:center 35%;background-repeat:no-repeat;background-attachment:scroll;}
 .hero::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 2px,transparent 2px 46px);pointer-events:none;}
 .hero-inner{position:relative;z-index:2;text-align:center;max-width:800px;margin-inline:auto;}
 .hero-tagline{font-family:var(--f-mono);color:var(--oro);font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1rem;}
@@ -223,13 +226,24 @@ footer{background:var(--tinta);color:#B9CEDC;padding:3rem 0 1.5rem;}
       <a href="#mapa" class="btn btn-primary">Explorar el mapa ↓</a>
       <a href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener" class="btn btn-outline">Registrar mi club</a>
     </div>
-    <div class="hero-banner reveal">
-      <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/banner%20web%20deporte.jpg" alt="Banner CODERE - deporte y recreación" loading="lazy">
-    </div>
     <div class="hero-stats">
       <div><strong>20</strong><span>Disciplinas listadas</span></div>
       <div><strong>1</strong><span>Mapa nacional interactivo</span></div>
       <div><strong>+</strong><span>Clubes por afiliar cada semana</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIÉNES SOMOS -->
+<section id="quienes-somos">
+  <div class="container" style="display:grid;grid-template-columns:1fr 1fr;gap:2.6rem;align-items:center;">
+    <div class="reveal">
+      <p class="eyebrow">Una iniciativa de Concertación Ciudadana</p>
+      <h2>El deporte también es un espacio para reconstruir el país</h2>
+      <p style="color:var(--tinta-suave);font-size:1rem;line-height:1.7;margin-top:1rem;">CODERE nace desde la Secretaría de Deporte y Recreación de Concertación Ciudadana, el movimiento liderado por el Dr. César Pérez Vivas, con un propósito claro: darle visibilidad a los clubes, ligas y espacios recreativos que ya trabajan en cada comunidad, y ponerlos en un mismo mapa al alcance de cualquier familia venezolana. Es un esfuerzo impulsado desde los liderazgos focales del movimiento en todo el territorio nacional.</p>
+    </div>
+    <div class="reveal" style="border-radius:var(--radio-l);overflow:hidden;box-shadow:var(--sombra);border:1px solid var(--borde);">
+      <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/imagenhomeconcertacion.png" alt="Concertación Ciudadana" loading="lazy" style="width:100%;object-fit:cover;">
     </div>
   </div>
 </section>
@@ -363,7 +377,11 @@ footer{background:var(--tinta);color:#B9CEDC;padding:3rem 0 1.5rem;}
     <div class="reveal">
       <div class="contacto-item">
         <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/iconodewhatsapp.png" alt="WhatsApp" loading="lazy">
-        <div><strong>Teléfono / WhatsApp</strong><span>0412-4146837</span></div>
+        <div><strong>WhatsApp — Clubes y registro</strong><span>0412-4146837</span></div>
+      </div>
+      <div class="contacto-item">
+        <span style="font-size:1.4rem">☎️</span>
+        <div><strong>Teléfono de atención general</strong><span>0424-4525765</span></div>
       </div>
       <div class="contacto-item">
         <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/iconoinstagram.png" alt="Instagram" loading="lazy">
@@ -405,7 +423,8 @@ footer{background:var(--tinta);color:#B9CEDC;padding:3rem 0 1.5rem;}
       <div>
         <h4>Contacto</h4>
         <ul>
-          <li>0412-4146837</li>
+          <li>WhatsApp: 0412-4146837</li>
+          <li>Atención general: 0424-4525765</li>
           <li>@concertacion.ve</li>
           <li>Secretaría de Deporte y Recreación</li>
         </ul>
@@ -413,7 +432,7 @@ footer{background:var(--tinta);color:#B9CEDC;padding:3rem 0 1.5rem;}
     </div>
     <div class="footer-bottom">
       <span>© <span id="year"></span> CODERE — Concertación Ciudadana.</span>
-      <span>Conectando el deporte y la recreación desde los liderazgos focales.</span>
+      <span>Diseño digital auspiciado por Nexus Marketing.</span>
     </div>
   </div>
 </footer>
