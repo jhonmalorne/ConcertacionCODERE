@@ -1,2144 +1,574 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Escamilla B. Wilson M. - Sistema POS</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-
-        /* HEADER */
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .nav-btn {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .nav-btn:hover {
-            background: rgba(255,255,255,0.25);
-            transform: translateY(-2px);
-        }
-
-        .nav-btn.active {
-            background: rgba(255,255,255,0.35);
-            border-color: white;
-        }
-
-        /* MAIN CONTAINER */
-        .container-main {
-            max-width: 1400px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-
-        /* SECCIONES */
-        .section {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* CARDS */
-        .card-custom {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            border: 1px solid #e0e0e0;
-            transition: all 0.3s ease;
-        }
-
-        .card-custom:hover {
-            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
-            transform: translateY(-2px);
-        }
-
-        /* GRID */
-        .grid-productos {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        /* PRODUCTO CARD */
-        .producto-card {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 1.25rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .producto-card:hover {
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
-            border-color: #667eea;
-        }
-
-        .producto-card.stock-critico {
-            border-left: 4px solid #e74c3c;
-        }
-
-        .stock-badge {
-            display: inline-block;
-            padding: 0.5rem 0.75rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-top: 0.5rem;
-        }
-
-        .stock-badge.critico {
-            background: #fee;
-            color: #c00;
-        }
-
-        .stock-badge.normal {
-            background: #efe;
-            color: #060;
-        }
-
-        /* FORMULARIOS */
-        .form-section {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        /* BOTONES */
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-secondary {
-            background: #f0f0f0;
-            color: #333;
-            border: 1px solid #ddd;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: #e0e0e0;
-        }
-
-        .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-        }
-
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-
-        /* TABLAS */
-        .table-responsive {
-            overflow-x: auto;
-            border-radius: 8px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        thead {
-            background: #f8f9fa;
-        }
-
-        th {
-            padding: 1rem;
-            text-align: left;
-            font-weight: 600;
-            color: #333;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        tr:hover {
-            background: #f8f9fa;
-        }
-
-        /* CARRITO */
-        .carrito-container {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            position: sticky;
-            top: 80px;
-        }
-
-        .carrito-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid #f0f0f0;
-            gap: 1rem;
-        }
-
-        .carrito-item-info {
-            flex: 1;
-        }
-
-        .carrito-item-nombre {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .carrito-item-cantidad {
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .carrito-item-total {
-            font-weight: 700;
-            color: #667eea;
-            min-width: 80px;
-            text-align: right;
-        }
-
-        .carrito-total {
-            padding: 1.5rem 0;
-            border-top: 2px solid #667eea;
-            margin-top: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1.3rem;
-            font-weight: 700;
-        }
-
-        .carrito-resumen {
-            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-        }
-
-        /* MODAL */
-        .modal-backdrop {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-backdrop.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 2rem;
-            max-width: 600px;
-            width: 90%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .modal-header {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        /* NOTIFICACIONES */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: white;
-            padding: 1rem 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            z-index: 3000;
-            animation: slideUp 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .toast.success {
-            border-left: 4px solid #27ae60;
-        }
-
-        .toast.error {
-            border-left: 4px solid #e74c3c;
-        }
-
-        .toast.info {
-            border-left: 4px solid #3498db;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .header-content {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .nav-buttons {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .nav-btn {
-                flex: 1;
-                justify-content: center;
-                min-width: 100px;
-            }
-
-            .grid-productos {
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            }
-
-            .carrito-container {
-                position: static;
-                margin-top: 2rem;
-            }
-
-            .toast {
-                bottom: 1rem;
-                right: 1rem;
-                left: 1rem;
-            }
-        }
-
-        /* ALERTA DEUDA */
-        .deuda-alert {
-            background: #fee;
-            border-left: 4px solid #c00;
-            padding: 1rem;
-            border-radius: 6px;
-            color: #c00;
-            margin: 1rem 0;
-        }
-
-        /* HISTORIAL */
-        .historial-item {
-            background: #f8f9fa;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 0.75rem;
-            border-left: 4px solid #667eea;
-        }
-
-        .historial-fecha {
-            font-weight: 600;
-            color: #667eea;
-            margin-bottom: 0.5rem;
-        }
-
-        /* BOLETA */
-        .boleta {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            font-family: 'Courier New', monospace;
-            max-width: 500px;
-            margin: 0 auto;
-            position: relative;
-            page-break-after: always;
-        }
-
-        .boleta::before {
-            content: "NOTA DE VENTA";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 4rem;
-            opacity: 0.05;
-            font-weight: 900;
-            white-space: nowrap;
-        }
-
-        .boleta-header {
-            text-align: center;
-            border-bottom: 1px solid #000;
-            padding-bottom: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .boleta-title {
-            font-weight: 700;
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .boleta-info {
-            font-size: 0.85rem;
-            line-height: 1.4;
-        }
-
-        .boleta-detail {
-            margin: 1rem 0;
-            font-size: 0.9rem;
-        }
-
-        .boleta-products {
-            border-top: 1px solid #000;
-            border-bottom: 2px solid #000;
-            padding: 1rem 0;
-            margin: 1rem 0;
-        }
-
-        .boleta-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            margin: 0.5rem 0;
-        }
-
-        .boleta-total {
-            font-weight: 700;
-            font-size: 1.1rem;
-            text-align: right;
-            margin-top: 1rem;
-        }
-
-        .boleta-footer {
-            text-align: center;
-            font-size: 0.85rem;
-            margin-top: 1.5rem;
-            border-top: 1px solid #000;
-            padding-top: 1rem;
-        }
-
-        /* GRÁFICOS */
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin: 2rem 0;
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-
-        /* FOOTER */
-        .footer {
-            background: #2c3e50;
-            color: white;
-            text-align: center;
-            padding: 2rem;
-            margin-top: 4rem;
-        }
-
-        .footer-text {
-            font-size: 0.9rem;
-            line-height: 1.6;
-        }
-
-        /* ESTADO BADGE */
-        .badge-estado {
-            display: inline-block;
-            padding: 0.4rem 0.8rem;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        .badge-pagado {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .badge-pendiente {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .badge-deuda {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        /* BÚSQUEDA */
-        .search-box {
-            margin-bottom: 1.5rem;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CODERE | Conexión Deportiva y Recreativa — Concertación</title>
+<meta name="description" content="CODERE conecta a los clubes deportivos, parques y plazas de Venezuela en un solo mapa digital. Consulta la ficha de cada club y regístrate para aparecer como afiliado.">
+<meta name="keywords" content="deporte Carabobo, clubes deportivos Venezuela, mapa deportivo, recreación, Concertación, Los Guayos, voleibol, parques">
+<meta name="theme-color" content="#0B2545">
+<meta property="og:type" content="website">
+<meta property="og:title" content="CODERE — Conexión Deportiva y Recreativa">
+<meta property="og:description" content="Un solo mapa para todos los clubes, parques y plazas deportivas del país.">
+<meta property="og:image" content="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/banner%20web%20deporte.jpg">
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/logo%20concertacion%20sin%20fondo.png">
+
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org","@type":"SportsOrganization",
+  "name":"CODERE - Conexión Deportiva y Recreativa",
+  "parentOrganization":"Concertación Ciudadana",
+  "telephone":"+58-412-4146837"
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
+<style>
+:root{
+  --tinta:#0B2545;
+  --tinta-suave:#4E637E;
+  --cancha:#176B43;
+  --cancha-fuerte:#0F4E31;
+  --naranja:#FF6A1A;
+  --oro:#F2B705;
+  --crema:#F7F8F3;
+  --linea:#FF6A1A;
+  --borde:#E3E7E1;
+  --sombra:0 22px 50px -22px rgba(11,37,69,.4);
+  --radio-s:10px;--radio-m:18px;--radio-l:28px;
+  --f-display:'Oswald',sans-serif;--f-body:'Inter',sans-serif;--f-mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--f-body);color:var(--tinta);background:var(--crema);-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+ul{list-style:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;}
+.container{width:min(1200px,92%);margin-inline:auto;}
+h1,h2,h3,h4{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.01em;line-height:1.1;color:var(--tinta);}
+.eyebrow{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cancha);font-weight:700;display:flex;align-items:center;gap:.55rem;margin-bottom:.9rem;}
+.eyebrow::before{content:"";width:26px;height:3px;background:var(--naranja);display:inline-block;}
+:focus-visible{outline:3px solid var(--naranja);outline-offset:3px;}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important;scroll-behavior:auto !important;}}
+
+/* NAV */
+header.site{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(247,248,243,.88);backdrop-filter:blur(14px);border-bottom:1px solid var(--borde);transition:box-shadow .3s;}
+header.site.scrolled{box-shadow:0 8px 30px -18px rgba(11,37,69,.45);}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:.8rem 0;}
+.brand{display:flex;align-items:center;gap:.65rem;font-family:var(--f-display);font-weight:700;font-size:1.2rem;}
+.brand img{height:40px;width:40px;object-fit:contain;}
+.brand small{display:block;font-family:var(--f-body);font-size:.62rem;color:var(--tinta-suave);text-transform:none;letter-spacing:0;font-weight:600;}
+.nav-links{display:flex;gap:1.7rem;align-items:center;}
+.nav-links a{font-size:.85rem;font-weight:700;letter-spacing:.03em;text-transform:uppercase;color:var(--tinta-suave);position:relative;}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:-5px;width:0;height:2px;background:var(--naranja);transition:width .25s;}
+.nav-links a:hover{color:var(--tinta);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{background:var(--naranja);color:#fff;padding:.65rem 1.3rem;border-radius:6px;font-weight:700;font-size:.83rem;text-transform:uppercase;letter-spacing:.03em;box-shadow:0 10px 24px -10px rgba(255,106,26,.6);transition:transform .2s;}
+.nav-cta:hover{transform:translateY(-2px);}
+.nav-toggle{display:none;font-size:1.6rem;}
+@media(max-width:960px){.nav-links{position:fixed;top:68px;left:0;right:0;background:var(--crema);flex-direction:column;padding:1.5rem;gap:1.1rem;border-bottom:1px solid var(--borde);transform:translateY(-140%);transition:transform .35s;}.nav-links.open{transform:translateY(0);}.nav-toggle{display:block;}}
+
+/* HERO */
+.hero{position:relative;padding:9rem 0 4rem;color:#fff;overflow:hidden;background:linear-gradient(160deg,var(--tinta) 0%,#123A63 55%,var(--cancha-fuerte) 130%);}
+.hero::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 2px,transparent 2px 46px);pointer-events:none;}
+.hero-inner{position:relative;z-index:2;text-align:center;max-width:800px;margin-inline:auto;}
+.hero-tagline{font-family:var(--f-mono);color:var(--oro);font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1rem;}
+.hero h1{font-size:clamp(2.4rem,5.4vw,4rem);color:#fff;margin-bottom:1.1rem;}
+.hero h1 span{color:var(--naranja);}
+.hero p.lead{color:#CBD9E8;font-size:1.05rem;line-height:1.65;max-width:60ch;margin:0 auto 2.2rem;}
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:2.6rem;}
+.btn{padding:.95rem 1.7rem;border-radius:6px;font-weight:700;font-size:.88rem;text-transform:uppercase;letter-spacing:.03em;display:inline-flex;align-items:center;gap:.55rem;transition:transform .2s,box-shadow .2s;}
+.btn-primary{background:var(--naranja);color:#fff;box-shadow:0 16px 34px -14px rgba(255,106,26,.65);}
+.btn-primary:hover{transform:translateY(-3px);}
+.btn-outline{border:1.5px solid rgba(255,255,255,.4);color:#fff;}
+.btn-outline:hover{background:rgba(255,255,255,.12);}
+.hero-banner{border-radius:var(--radio-l);overflow:hidden;box-shadow:var(--sombra);border:5px solid rgba(255,255,255,.14);}
+.hero-banner img{width:100%;object-fit:cover;max-height:380px;}
+.hero-stats{display:flex;justify-content:center;gap:2.4rem;flex-wrap:wrap;margin-top:2.2rem;}
+.hero-stats div{text-align:center;}
+.hero-stats strong{display:block;font-family:var(--f-display);font-size:1.9rem;color:var(--oro);}
+.hero-stats span{font-size:.75rem;color:#B9C9DB;text-transform:uppercase;letter-spacing:.05em;}
+
+section{padding:6rem 0;}
+.section-head{max-width:680px;margin-bottom:3rem;}
+.section-head.center{margin-inline:auto;text-align:center;}
+.section-head p{color:var(--tinta-suave);font-size:1rem;line-height:1.65;margin-top:.8rem;}
+.bg-alt{background:#fff;}
+.bg-navy{background:var(--tinta);color:#fff;}
+.bg-navy h2,.bg-navy .eyebrow{color:#fff;}
+.bg-navy .eyebrow{color:var(--oro);}
+.bg-navy .eyebrow::before{background:var(--naranja);}
+
+/* DISCIPLINAS */
+.disc-categorias{display:grid;grid-template-columns:repeat(4,1fr);gap:1.3rem;}
+.disc-card{background:#fff;border:1px solid var(--borde);border-radius:var(--radio-m);padding:1.7rem 1.5rem;position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s;}
+.disc-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--naranja);}
+.disc-card:hover{transform:translateY(-6px);box-shadow:var(--sombra);}
+.disc-card h4{font-size:1rem;margin-bottom:.2rem;}
+.disc-card .disc-sub{font-family:var(--f-mono);font-size:.68rem;color:var(--cancha);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.9rem;display:block;}
+.disc-chip-list{display:flex;flex-wrap:wrap;gap:.4rem;}
+.disc-chip{font-size:.76rem;background:var(--crema);border:1px solid var(--borde);padding:.35rem .7rem;border-radius:999px;color:var(--tinta-suave);font-weight:600;}
+@media(max-width:1000px){.disc-categorias{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.disc-categorias{grid-template-columns:1fr;}}
+
+/* MAPA */
+.mapa-wrap{display:grid;grid-template-columns:360px 1fr;border-radius:var(--radio-l);overflow:hidden;box-shadow:var(--sombra);border:1px solid var(--borde);}
+.mapa-panel{background:#fff;padding:1.7rem;max-height:660px;overflow-y:auto;}
+.mapa-filtros{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.1rem;}
+.filtro-chip{padding:.5rem 1rem;border-radius:999px;border:1px solid var(--borde);font-size:.78rem;font-weight:700;color:var(--tinta-suave);text-transform:uppercase;letter-spacing:.02em;}
+.filtro-chip.active{background:var(--tinta);color:#fff;border-color:var(--tinta);}
+.mapa-select{width:100%;padding:.7rem .9rem;border-radius:var(--radio-s);border:1px solid var(--borde);font-size:.88rem;margin-bottom:1.1rem;background:#fff;}
+.ficha-placeholder{font-size:.87rem;color:var(--tinta-suave);line-height:1.6;padding:1rem;background:var(--crema);border-radius:var(--radio-s);}
+.ficha{display:none;flex-direction:column;gap:1rem;animation:fadeUp .35s ease;}
+.ficha.show{display:flex;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.ficha-header{display:flex;gap:.9rem;align-items:center;}
+.ficha-logo{width:58px;height:58px;border-radius:12px;object-fit:cover;background:var(--crema);border:1px solid var(--borde);flex:none;}
+.ficha-tipo{font-family:var(--f-mono);font-size:.66rem;text-transform:uppercase;letter-spacing:.06em;color:var(--naranja);font-weight:700;}
+.ficha-header h4{font-size:1.05rem;}
+.ficha-item{background:var(--crema);border-left:3px solid var(--cancha);border-radius:var(--radio-s);padding:.8rem 1rem;}
+.ficha-item strong{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--cancha);font-family:var(--f-mono);margin-bottom:.2rem;}
+.ficha-item p{font-size:.86rem;color:var(--tinta-suave);line-height:1.5;}
+.ficha-actions{display:flex;flex-direction:column;gap:.6rem;}
+.ficha-actions a{text-align:center;padding:.8rem;border-radius:6px;font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.02em;}
+.ficha-wsp{background:#25D366;color:#fff;}
+.ficha-ubi{background:var(--crema);color:var(--tinta);border:1px solid var(--borde);}
+#leafletMap{height:660px;width:100%;background:#DDEDE2;}
+.leaflet-container{font-family:var(--f-body);}
+.pin-club{background:var(--naranja);}
+.pin-parque{background:var(--cancha);}
+.pin-plaza{background:var(--oro);}
+@media(max-width:920px){.mapa-wrap{grid-template-columns:1fr;}#leafletMap{height:420px;}.mapa-panel{max-height:none;}}
+
+/* CLUBES AFILIADOS */
+.clubes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.3rem;}
+.club-card{background:#fff;border:1px solid var(--borde);border-radius:var(--radio-m);padding:1.6rem;text-align:center;transition:transform .25s,box-shadow .25s;}
+.club-card:hover{transform:translateY(-6px);box-shadow:var(--sombra);}
+.club-card img{width:74px;height:74px;object-fit:cover;border-radius:14px;margin:0 auto 1rem;background:var(--crema);}
+.club-card h4{font-size:1rem;margin-bottom:.3rem;}
+.club-card span{display:block;font-family:var(--f-mono);font-size:.7rem;color:var(--cancha);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.8rem;}
+.club-card p{font-size:.83rem;color:var(--tinta-suave);margin-bottom:1rem;line-height:1.5;}
+.club-card a{display:inline-block;font-size:.78rem;font-weight:700;color:var(--naranja);text-transform:uppercase;}
+.club-card.placeholder{border-style:dashed;color:var(--tinta-suave);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;}
+.club-card.placeholder .plus{font-size:2rem;color:var(--naranja);}
+@media(max-width:900px){.clubes-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.clubes-grid{grid-template-columns:1fr;}}
+
+/* REGISTRO CTA */
+.registro-banner{background:linear-gradient(120deg,var(--naranja),#FF8A45);border-radius:var(--radio-l);padding:3rem;display:flex;justify-content:space-between;align-items:center;gap:2rem;flex-wrap:wrap;color:#fff;box-shadow:var(--sombra);}
+.registro-banner h3{color:#fff;font-size:1.7rem;max-width:34ch;}
+.registro-banner p{color:rgba(255,255,255,.9);margin-top:.5rem;max-width:44ch;font-size:.95rem;}
+.registro-banner .btn{background:#fff;color:var(--naranja);}
+
+/* CONTACTO / FOOTER */
+.contacto-grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem;align-items:center;}
+.contacto-item{display:flex;gap:1rem;align-items:center;background:#fff;border:1px solid var(--borde);border-radius:var(--radio-m);padding:1.1rem 1.3rem;margin-bottom:1rem;}
+.contacto-item img{width:28px;height:28px;flex:none;}
+.contacto-item strong{display:block;font-size:.9rem;}
+.contacto-item span{font-size:.85rem;color:var(--tinta-suave);}
+footer{background:var(--tinta);color:#B9CEDC;padding:3rem 0 1.5rem;}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:2rem;margin-bottom:2rem;}
+.footer-grid h4{color:#fff;font-size:.9rem;margin-bottom:.9rem;text-transform:uppercase;}
+.footer-grid li{font-size:.85rem;margin-bottom:.5rem;}
+.footer-social{display:flex;gap:.8rem;margin-top:1rem;}
+.footer-social a{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;}
+.footer-social img{width:20px;height:20px;}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:1.2rem;font-size:.78rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.6rem;}
+@media(max-width:800px){.footer-grid{grid-template-columns:1fr;}.contacto-grid{grid-template-columns:1fr;}}
+
+.whatsapp-float{position:fixed;bottom:1.6rem;right:1.6rem;z-index:900;background:#25D366;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 15px 30px -10px rgba(37,211,102,.7);animation:pulse 2.4s infinite;}
+.whatsapp-float img{width:30px;height:30px;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(37,211,102,.55);}70%{box-shadow:0 0 0 16px rgba(37,211,102,0);}100%{box-shadow:0 0 0 0 rgba(37,211,102,0);}}
+.skip-link{position:absolute;left:-999px;top:0;background:#fff;padding:.8rem 1.2rem;z-index:2000;}
+.skip-link:focus{left:0;}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.in{opacity:1;transform:translateY(0);}
+</style>
 </head>
 <body>
-    <!-- HEADER -->
-    <div class="header">
-        <div class="header-content">
-            <div class="logo">
-                <i class="fas fa-store"></i> Escamilla B. Wilson M.
-            </div>
-            <div class="nav-buttons">
-                <button class="nav-btn active" onclick="mostrarSeccion('ventas')">
-                    <i class="fas fa-shopping-cart"></i> Ventas
-                </button>
-                <button class="nav-btn" onclick="mostrarSeccion('almacen')">
-                    <i class="fas fa-box"></i> Almacén
-                </button>
-                <button class="nav-btn" onclick="mostrarSeccion('fiados')">
-                    <i class="fas fa-handshake"></i> Fiados
-                </button>
-                <button class="nav-btn" onclick="mostrarSeccion('reportes')">
-                    <i class="fas fa-chart-bar"></i> Reportes
-                </button>
-                <button class="nav-btn" onclick="mostrarSeccion('clientes')">
-                    <i class="fas fa-users"></i> Clientes
-                </button>
-                <button class="nav-btn" onclick="mostrarSeccion('proveedores')">
-                    <i class="fas fa-industry"></i> Proveedores
-                </button>
-            </div>
-        </div>
+<a href="#main" class="skip-link">Saltar al contenido</a>
+
+<header class="site" id="siteHeader">
+  <nav class="nav container">
+    <a href="#top" class="brand">
+      <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/logo%20concertacion%20sin%20fondo.png" alt="Logo Concertación" loading="lazy">
+      <span>CODERE<small>Conexión Deportiva y Recreativa</small></span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#disciplinas">Disciplinas</a></li>
+      <li><a href="#mapa">Mapa</a></li>
+      <li><a href="#clubes">Clubes afiliados</a></li>
+      <li><a href="#registro">Registro</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <a class="nav-cta" href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener">Registrar club</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">☰</button>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <div class="container hero-inner">
+    <p class="hero-tagline">Secretaría de Deporte y Recreación · Concertación</p>
+    <h1>Todo el deporte y la recreación del país, <span>en un solo mapa</span></h1>
+    <p class="lead">CODERE conecta a los clubes deportivos, parques y plazas de cada comunidad. Encuentra un club por disciplina, revisa su ficha de contacto y regístrate para que tu club también aparezca en el mapa.</p>
+    <div class="hero-actions">
+      <a href="#mapa" class="btn btn-primary">Explorar el mapa ↓</a>
+      <a href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener" class="btn btn-outline">Registrar mi club</a>
     </div>
-
-    <!-- MAIN CONTAINER -->
-    <div class="container-main">
-        <!-- SECCIÓN VENTAS -->
-        <div id="ventas" class="section active">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="form-section">
-                        <h2><i class="fas fa-search"></i> Buscar Productos</h2>
-                        <div class="search-box">
-                            <input type="text" id="buscarProducto" placeholder="Buscar por nombre o código..." onkeyup="filtrarProductos()">
-                        </div>
-                    </div>
-
-                    <div class="grid-productos" id="gridProductos"></div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class="carrito-container">
-                        <h3><i class="fas fa-receipt"></i> Nota de Venta</h3>
-                        
-                        <div class="form-group" style="margin-top: 1.5rem;">
-                            <label>Cliente</label>
-                            <input type="text" id="clienteNombre" placeholder="Nombre cliente" onchange="autocompletarCliente()">
-                            <small style="color: #666; margin-top: 0.25rem; display: block;">Escriba para buscar clientes existentes</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Teléfono/WhatsApp</label>
-                            <input type="tel" id="clienteTelefono" placeholder="+58 414-1234567">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Dirección/Zona</label>
-                            <input type="text" id="clienteDireccion" placeholder="Dirección">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Método de Pago</label>
-                            <select id="metodoPago">
-                                <option>Efectivo</option>
-                                <option>Pago Móvil</option>
-                                <option>Divisas</option>
-                                <option>Biopago</option>
-                                <option>Transferencia Bancaria</option>
-                                <option>Fiado/Crédito</option>
-                                <option>Binance</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Vendedor</label>
-                            <input type="text" id="vendedor" placeholder="Nombre vendedor">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Número de Factura</label>
-                            <input type="text" id="numeroFactura" placeholder="Ej: 001">
-                        </div>
-
-                        <h4 style="margin-top: 1.5rem; margin-bottom: 1rem;">
-                            <i class="fas fa-shopping-bag"></i> Productos en Carrito
-                        </h4>
-                        <div id="carritoItems"></div>
-
-                        <div class="carrito-total">
-                            <span>Total:</span>
-                            <span id="totalCarrito">$0.00</span>
-                        </div>
-
-                        <div class="carrito-resumen">
-                            <div style="font-size: 0.9rem; margin-bottom: 0.5rem;">
-                                <strong>Cantidad items:</strong> <span id="cantidadItems">0</span>
-                            </div>
-                            <div style="font-size: 0.9rem;">
-                                <strong>Productos:</strong> <span id="countProductosCarrito">0</span>
-                            </div>
-                        </div>
-
-                        <button class="btn-secondary" style="width: 100%; margin-top: 1rem;" onclick="anularVenta()">
-                            <i class="fas fa-times"></i> Anular Venta
-                        </button>
-
-                        <button class="btn-primary" style="width: 100%; margin-top: 0.5rem;" onclick="generarBoleta()">
-                            <i class="fas fa-check"></i> Confirmar y Enviar por WhatsApp
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN ALMACÉN -->
-        <div id="almacen" class="section">
-            <div class="form-section">
-                <h2><i class="fas fa-box-open"></i> Gestión de Almacén</h2>
-                
-                <div style="margin-bottom: 2rem;">
-                    <button class="btn-primary" onclick="abrirModalProducto()">
-                        <i class="fas fa-plus"></i> Agregar Producto
-                    </button>
-                    <button class="btn-secondary" style="margin-left: 0.5rem;" onclick="descargarInventario()">
-                        <i class="fas fa-download"></i> Descargar Inventario
-                    </button>
-                </div>
-
-                <div class="search-box">
-                    <input type="text" id="buscarInventario" placeholder="Buscar producto..." onkeyup="filtrarInventario()">
-                </div>
-
-                <div style="margin-bottom: 1rem;">
-                    <label>Filtrar por categoría:</label>
-                    <select id="filtroCategoria" onchange="filtrarInventario()">
-                        <option value="">Todas</option>
-                        <option value="Accesorios">Accesorios</option>
-                        <option value="Juguetes">Juguetes</option>
-                        <option value="Juguetes Avengers">Juguetes Avengers</option>
-                        <option value="Lonchera y Cartucheras">Lonchera y Cartucheras</option>
-                        <option value="Morrales">Morrales</option>
-                        <option value="Peluches">Peluches</option>
-                        <option value="Peluches Personajes">Peluches Personajes</option>
-                        <option value="Útiles Escolares">Útiles Escolares</option>
-                    </select>
-                </div>
-
-                <div class="table-responsive">
-                    <table id="tablaInventario">
-                        <thead>
-                            <tr>
-                                <th>Código</th>
-                                <th>Descripción</th>
-                                <th>Categoría</th>
-                                <th>Stock</th>
-                                <th>Precio Compra</th>
-                                <th>Precio Venta</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inventarioBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN FIADOS -->
-        <div id="fiados" class="section">
-            <div class="form-section">
-                <h2><i class="fas fa-handshake"></i> Gestión de Fiados</h2>
-                
-                <div style="margin-bottom: 1.5rem;">
-                    <button class="btn-secondary" style="margin-right: 0.5rem;" onclick="descargarFiados()">
-                        <i class="fas fa-download"></i> Descargar Fiados
-                    </button>
-                </div>
-
-                <div class="search-box">
-                    <input type="text" id="buscarFiados" placeholder="Buscar por nombre, zona o WhatsApp..." onkeyup="filtrarFiados()">
-                </div>
-
-                <div class="table-responsive">
-                    <table id="tablaFiados">
-                        <thead>
-                            <tr>
-                                <th>Cliente</th>
-                                <th>Teléfono</th>
-                                <th>Zona</th>
-                                <th>Deuda Total</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fiadosBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN REPORTES -->
-        <div id="reportes" class="section">
-            <div class="form-section">
-                <h2><i class="fas fa-chart-bar"></i> Cierre y Reportes</h2>
-
-                <div style="margin-bottom: 2rem;">
-                    <button class="btn-primary" style="margin-right: 0.5rem;" onclick="descargarReporteVentas()">
-                        <i class="fas fa-download"></i> Descargar Reporte de Ventas
-                    </button>
-                    <button class="btn-primary" style="margin-right: 0.5rem;" onclick="descargarInventarioHoy()">
-                        <i class="fas fa-download"></i> Descargar Inventario Hoy
-                    </button>
-                    <button class="btn-secondary" onclick="cerrarDia()">
-                        <i class="fas fa-lock"></i> Cerrar Día
-                    </button>
-                </div>
-
-                <div class="chart-container">
-                    <canvas id="ventasPorDia"></canvas>
-                </div>
-
-                <div class="chart-container">
-                    <canvas id="ventasPorMetodo"></canvas>
-                </div>
-
-                <div class="form-section">
-                    <h3><i class="fas fa-list"></i> Detalle de Ventas del Día</h3>
-                    <div class="table-responsive">
-                        <table id="tablaVentas">
-                            <thead>
-                                <tr>
-                                    <th>Factura</th>
-                                    <th>Hora</th>
-                                    <th>Cliente</th>
-                                    <th>Método de Pago</th>
-                                    <th>Vendedor</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ventasBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN CLIENTES -->
-        <div id="clientes" class="section">
-            <div class="form-section">
-                <h2><i class="fas fa-users"></i> Gestión de Clientes</h2>
-
-                <div class="search-box">
-                    <input type="text" id="buscarClientes" placeholder="Buscar cliente..." onkeyup="filtrarClientes()">
-                </div>
-
-                <div class="table-responsive">
-                    <table id="tablaClientes">
-                        <thead>
-                            <tr>
-                                <th>Nombre</th>
-                                <th>Teléfono</th>
-                                <th>Zona</th>
-                                <th>Total Compras</th>
-                                <th>Deuda Actual</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="clientesBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- SECCIÓN PROVEEDORES -->
-        <div id="proveedores" class="section">
-            <div class="form-section">
-                <h2><i class="fas fa-industry"></i> Gestión de Proveedores</h2>
-
-                <div style="margin-bottom: 2rem;">
-                    <button class="btn-primary" onclick="abrirModalProveedor()">
-                        <i class="fas fa-plus"></i> Agregar Proveedor
-                    </button>
-                    <button class="btn-secondary" style="margin-left: 0.5rem;" onclick="descargarProveedores()">
-                        <i class="fas fa-download"></i> Descargar Proveedores
-                    </button>
-                </div>
-
-                <div class="search-box">
-                    <input type="text" id="buscarProveedores" placeholder="Buscar proveedor..." onkeyup="filtrarProveedores()">
-                </div>
-
-                <div class="table-responsive">
-                    <table id="tablaProveedores">
-                        <thead>
-                            <tr>
-                                <th>Empresa</th>
-                                <th>Contacto</th>
-                                <th>Teléfono</th>
-                                <th>Deuda Actual</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="proveedoresBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+    <div class="hero-banner reveal">
+      <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/banner%20web%20deporte.jpg" alt="Banner CODERE - deporte y recreación" loading="lazy">
     </div>
-
-    <!-- MODALES -->
-    <!-- Modal Producto -->
-    <div class="modal-backdrop" id="modalProducto">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>Agregar Producto</span>
-                <button class="modal-close" onclick="cerrarModalProducto()">×</button>
-            </div>
-            <form id="formProducto">
-                <div class="form-group">
-                    <label>Código Único</label>
-                    <input type="text" id="prodCodigo" required>
-                </div>
-                <div class="form-group">
-                    <label>Descripción</label>
-                    <input type="text" id="prodDescripcion" required>
-                </div>
-                <div class="form-group">
-                    <label>Categoría</label>
-                    <select id="prodCategoria">
-                        <option>Accesorios</option>
-                        <option>Juguetes</option>
-                        <option>Juguetes Avengers</option>
-                        <option>Lonchera y Cartucheras</option>
-                        <option>Morrales</option>
-                        <option>Peluches</option>
-                        <option>Peluches Personajes</option>
-                        <option>Útiles Escolares</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Stock</label>
-                    <input type="number" id="prodStock" required min="0">
-                </div>
-                <div class="form-group">
-                    <label>Precio de Compra ($)</label>
-                    <input type="number" id="prodPrecioCompra" required min="0" step="0.01">
-                </div>
-                <div class="form-group">
-                    <label>Precio de Venta ($)</label>
-                    <input type="number" id="prodPrecioVenta" required min="0" step="0.01">
-                </div>
-                <button type="button" class="btn-primary" onclick="guardarProducto()">
-                    <i class="fas fa-save"></i> Guardar Producto
-                </button>
-            </form>
-        </div>
+    <div class="hero-stats">
+      <div><strong>20</strong><span>Disciplinas listadas</span></div>
+      <div><strong>1</strong><span>Mapa nacional interactivo</span></div>
+      <div><strong>+</strong><span>Clubes por afiliar cada semana</span></div>
     </div>
+  </div>
+</section>
 
-    <!-- Modal Pagar Fiado -->
-    <div class="modal-backdrop" id="modalPagarFiado">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>Registrar Pago de Fiado</span>
-                <button class="modal-close" onclick="cerrarModalPagarFiado()">×</button>
-            </div>
-            <div class="form-group">
-                <label>Monto a Pagar ($)</label>
-                <input type="number" id="montoPagar" min="0" step="0.01">
-            </div>
-            <div class="form-group">
-                <label>Método de Pago</label>
-                <select id="metodoPagoFiado">
-                    <option>Efectivo</option>
-                    <option>Pago Móvil</option>
-                    <option>Divisas</option>
-                    <option>Transferencia</option>
-                </select>
-            </div>
-            <button type="button" class="btn-primary" style="width: 100%;" onclick="registrarPagoFiado()">
-                <i class="fas fa-check"></i> Registrar Pago
-            </button>
-        </div>
+<!-- DISCIPLINAS -->
+<section id="disciplinas" class="bg-alt">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Disciplinas deportivas</p>
+      <h2>Un lugar para cada disciplina</h2>
+      <p>Esta lista crece con cada club que se registra. Si tu disciplina no aparece, indícala en el formulario de registro y la sumamos.</p>
     </div>
-
-    <!-- Modal Proveedor -->
-    <div class="modal-backdrop" id="modalProveedor">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span>Agregar Proveedor</span>
-                <button class="modal-close" onclick="cerrarModalProveedor()">×</button>
-            </div>
-            <form id="formProveedor">
-                <div class="form-group">
-                    <label>Nombre Empresa</label>
-                    <input type="text" id="provEmpresa" required>
-                </div>
-                <div class="form-group">
-                    <label>Contacto</label>
-                    <input type="text" id="provContacto" required>
-                </div>
-                <div class="form-group">
-                    <label>Teléfono</label>
-                    <input type="tel" id="provTelefono" required>
-                </div>
-                <div class="form-group">
-                    <label>Dirección</label>
-                    <input type="text" id="provDireccion" required>
-                </div>
-                <button type="button" class="btn-primary" onclick="guardarProveedor()">
-                    <i class="fas fa-save"></i> Guardar Proveedor
-                </button>
-            </form>
+    <div class="disc-categorias">
+      <div class="disc-card reveal">
+        <h4>Deportes de conjunto</h4>
+        <span class="disc-sub">Alta convocatoria</span>
+        <div class="disc-chip-list">
+          <span class="disc-chip">Fútbol Campo</span><span class="disc-chip">Fútbol Sala (Futsal)</span>
+          <span class="disc-chip">Baloncesto</span><span class="disc-chip">Voleibol (Cancha y Playa)</span>
+          <span class="disc-chip">Béisbol / Kickingball</span><span class="disc-chip">Softbol</span>
         </div>
-    </div>
-
-    <!-- FOOTER -->
-    <div class="footer">
-        <div class="footer-text">
-            <p><strong>Escamilla B. Wilson M.</strong><br>
-            Valencia, Edo. Carabobo, Venezuela<br>
-            Teléfono: 0414-4372956 / 0412-4749513<br>
-            <br>
-            Desarrollado por <strong>Nexus Marketing</strong><br>
-            Contacto: 04244525765<br>
-            © 2024 Escamilla B. Wilson M. - Todos los derechos reservados</p>
+      </div>
+      <div class="disc-card reveal">
+        <h4>Deportes de combate</h4>
+        <span class="disc-sub">Tradición en Carabobo</span>
+        <div class="disc-chip-list">
+          <span class="disc-chip">Boxeo</span><span class="disc-chip">Karate-do</span>
+          <span class="disc-chip">Taekwondo</span><span class="disc-chip">Judo</span>
+          <span class="disc-chip">Esgrima</span><span class="disc-chip">Lucha Olímpica / Libre</span>
         </div>
+      </div>
+      <div class="disc-card reveal">
+        <h4>Fuerza y resistencia</h4>
+        <span class="disc-sub">Rendimiento físico</span>
+        <div class="disc-chip-list">
+          <span class="disc-chip">Atletismo</span><span class="disc-chip">Ciclismo (Ruta/MTB/BMX)</span>
+          <span class="disc-chip">Halterofilia</span><span class="disc-chip">Crossfit / Funcional</span>
+          <span class="disc-chip">Natación</span>
+        </div>
+      </div>
+      <div class="disc-card reveal">
+        <h4>Precisión y otros</h4>
+        <span class="disc-sub">Técnica y estrategia</span>
+        <div class="disc-chip-list">
+          <span class="disc-chip">Tenis de Mesa</span><span class="disc-chip">Tenis de Campo</span>
+          <span class="disc-chip">Ajedrez</span><span class="disc-chip">Gimnasia (Artística/Rítmica)</span>
+        </div>
+      </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        // ==================== ESTRUCTURA DE DATOS ====================
-        let appData = {
-            productos: [],
-            ventas: [],
-            fiados: [],
-            clientes: [],
-            proveedores: [],
-            zonas: ['Valencia Centro', 'Valencia Lídice', 'Valencia Florida', 'Valencia Arturo Michelena'],
-            numerosFacturaUsados: []
-        };
-
-        // ==================== INICIALIZACIÓN ====================
-        function inicializar() {
-            cargarDatos();
-            renderizarProductos();
-            renderizarInventario();
-            renderizarFiados();
-            renderizarClientes();
-            renderizarProveedores();
-            renderizarVentas();
-        }
-
-        // ==================== GESTIÓN DE DATOS ====================
-        function guardarDatos() {
-            localStorage.setItem('appData', JSON.stringify(appData));
-        }
-
-        function cargarDatos() {
-            const datos = localStorage.getItem('appData');
-            if (datos) {
-                appData = JSON.parse(datos);
-            } else {
-                cargarDatosDemo();
-            }
-        }
-
-        function cargarDatosDemo() {
-            appData.productos = [
-                { id: 'PROD001', codigo: 'PROD001', nombre: 'Peluche Osito', categoria: 'Peluches', descripcion: 'Peluche suave osito marrón', stock: 15, precioCompra: 2.50, precioVenta: 5.00, imagen: '', fechaIngreso: new Date().toLocaleString() },
-                { id: 'PROD002', codigo: 'PROD002', nombre: 'Mochila Escolar', categoria: 'Morrales', descripcion: 'Mochila roja con diseño moderno', stock: 3, precioCompra: 8.00, precioVenta: 15.00, imagen: '', fechaIngreso: new Date().toLocaleString() },
-                { id: 'PROD003', codigo: 'PROD003', nombre: 'Útiles Escolares Pack', categoria: 'Útiles Escolares', descripcion: 'Set completo de útiles', stock: 25, precioCompra: 3.00, precioVenta: 6.00, imagen: '', fechaIngreso: new Date().toLocaleString() },
-                { id: 'PROD004', codigo: 'PROD004', nombre: 'Juguete Avengers', categoria: 'Juguetes Avengers', descripcion: 'Figura de acción Avengers', stock: 4, precioCompra: 5.00, precioVenta: 10.00, imagen: '', fechaIngreso: new Date().toLocaleString() }
-            ];
-            guardarDatos();
-        }
-
-        // ==================== NAVEGACIÓN ====================
-        function mostrarSeccion(seccion) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(seccion).classList.add('active');
-
-            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            if (seccion === 'reportes') {
-                setTimeout(() => renderizarGraficos(), 100);
-            }
-        }
-
-        // ==================== SECCIÓN VENTAS ====================
-        function renderizarProductos() {
-            const grid = document.getElementById('gridProductos');
-            grid.innerHTML = appData.productos.map(prod => `
-                <div class="producto-card ${prod.stock <= 6 ? 'stock-critico' : ''}">
-                    <h5>${prod.nombre}</h5>
-                    <p style="color: #666; font-size: 0.9rem;">${prod.descripcion}</p>
-                    <div style="margin: 1rem 0;">
-                        <div><strong>Stock:</strong> ${prod.stock}</div>
-                        <div><strong>Precio:</strong> $${prod.precioVenta.toFixed(2)}</div>
-                    </div>
-                    ${prod.stock <= 6 ? `<span class="stock-badge critico"><i class="fas fa-exclamation-triangle"></i> Crítico</span>` : `<span class="stock-badge normal">En stock</span>`}
-                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-                        <button class="btn-primary btn-sm" style="flex: 1;" onclick="abrirModalAgregarCarrito('${prod.id}')">
-                            <i class="fas fa-plus"></i> Agregar
-                        </button>
-                        <button class="btn-secondary btn-sm" style="flex: 1;" onclick="verHistorialProducto('${prod.id}')">
-                            <i class="fas fa-history"></i> Historial
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function filtrarProductos() {
-            const busqueda = document.getElementById('buscarProducto').value.toLowerCase();
-            const productos = appData.productos.filter(p => 
-                p.nombre.toLowerCase().includes(busqueda) || 
-                p.codigo.toLowerCase().includes(busqueda)
-            );
-            
-            const grid = document.getElementById('gridProductos');
-            grid.innerHTML = productos.map(prod => `
-                <div class="producto-card ${prod.stock <= 6 ? 'stock-critico' : ''}">
-                    <h5>${prod.nombre}</h5>
-                    <p style="color: #666; font-size: 0.9rem;">${prod.descripcion}</p>
-                    <div style="margin: 1rem 0;">
-                        <div><strong>Stock:</strong> ${prod.stock}</div>
-                        <div><strong>Precio:</strong> $${prod.precioVenta.toFixed(2)}</div>
-                    </div>
-                    ${prod.stock <= 6 ? `<span class="stock-badge critico"><i class="fas fa-exclamation-triangle"></i> Crítico</span>` : `<span class="stock-badge normal">En stock</span>`}
-                    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
-                        <button class="btn-primary btn-sm" style="flex: 1;" onclick="abrirModalAgregarCarrito('${prod.id}')">
-                            <i class="fas fa-plus"></i> Agregar
-                        </button>
-                        <button class="btn-secondary btn-sm" style="flex: 1;" onclick="verHistorialProducto('${prod.id}')">
-                            <i class="fas fa-history"></i> Historial
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        let carritoItems = [];
-
-        function abrirModalAgregarCarrito(productoId) {
-            const producto = appData.productos.find(p => p.id === productoId);
-            if (!producto) return;
-
-            const cantidad = prompt(`¿Cuántas unidades de "${producto.nombre}" desea agregar?`, '1');
-            if (cantidad && parseInt(cantidad) > 0) {
-                agregarAlCarrito(productoId, parseInt(cantidad), producto.precioVenta);
-            }
-        }
-
-        function agregarAlCarrito(productoId, cantidad, precio) {
-            const producto = appData.productos.find(p => p.id === productoId);
-            if (!producto) return;
-
-            const itemExistente = carritoItems.find(i => i.id === productoId);
-            if (itemExistente) {
-                itemExistente.cantidad += cantidad;
-            } else {
-                carritoItems.push({
-                    id: productoId,
-                    nombre: producto.nombre,
-                    codigo: producto.codigo,
-                    cantidad: cantidad,
-                    precioUnitario: precio,
-                    total: cantidad * precio
-                });
-            }
-
-            renderizarCarrito();
-            mostrarToast('Producto agregado al carrito', 'success');
-        }
-
-        function renderizarCarrito() {
-            const container = document.getElementById('carritoItems');
-            const totalCarrito = carritoItems.reduce((sum, item) => sum + item.total, 0);
-
-            container.innerHTML = carritoItems.map((item, idx) => `
-                <div class="carrito-item">
-                    <div class="carrito-item-info">
-                        <div class="carrito-item-nombre">${item.nombre}</div>
-                        <div class="carrito-item-cantidad">
-                            <input type="number" value="${item.cantidad}" style="width: 60px; padding: 0.25rem;" onchange="actualizarCantidadCarrito(${idx}, this.value)">
-                            × $${item.precioUnitario.toFixed(2)}
-                        </div>
-                    </div>
-                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                        <div class="carrito-item-total">$${item.total.toFixed(2)}</div>
-                        <button class="btn-danger btn-sm" onclick="eliminarDelCarrito(${idx})" style="padding: 0.25rem 0.5rem;">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                </div>
-            `).join('');
-
-            document.getElementById('totalCarrito').textContent = `$${totalCarrito.toFixed(2)}`;
-            document.getElementById('cantidadItems').textContent = carritoItems.length;
-            document.getElementById('countProductosCarrito').textContent = carritoItems.reduce((sum, item) => sum + item.cantidad, 0);
-        }
-
-        function actualizarCantidadCarrito(idx, cantidad) {
-            cantidad = parseInt(cantidad);
-            if (cantidad <= 0) {
-                eliminarDelCarrito(idx);
-                return;
-            }
-            carritoItems[idx].cantidad = cantidad;
-            carritoItems[idx].total = cantidad * carritoItems[idx].precioUnitario;
-            renderizarCarrito();
-        }
-
-        function eliminarDelCarrito(idx) {
-            carritoItems.splice(idx, 1);
-            renderizarCarrito();
-        }
-
-        function anularVenta() {
-            if (confirm('¿Desea anular esta venta? Se perderán todos los datos del carrito.')) {
-                carritoItems = [];
-                document.getElementById('clienteNombre').value = '';
-                document.getElementById('clienteTelefono').value = '';
-                document.getElementById('clienteDireccion').value = '';
-                document.getElementById('vendedor').value = '';
-                document.getElementById('numeroFactura').value = '';
-                renderizarCarrito();
-                mostrarToast('Venta anulada', 'info');
-            }
-        }
-
-        function generarBoleta() {
-            const cliente = document.getElementById('clienteNombre').value.trim();
-            const telefono = document.getElementById('clienteTelefono').value.trim();
-            const direccion = document.getElementById('clienteDireccion').value.trim();
-            const metodoPago = document.getElementById('metodoPago').value;
-            const vendedor = document.getElementById('vendedor').value.trim();
-            const numeroFactura = document.getElementById('numeroFactura').value.trim();
-
-            if (!cliente || !telefono || !direccion || !vendedor || !numeroFactura || carritoItems.length === 0) {
-                mostrarToast('Complete todos los campos y agregue productos', 'error');
-                return;
-            }
-
-            if (appData.numerosFacturaUsados.includes(numeroFactura)) {
-                mostrarToast('Este número de factura ya fue utilizado', 'error');
-                return;
-            }
-
-            // Guardar venta
-            const venta = {
-                id: 'VENTA' + Date.now(),
-                numeroFactura: numeroFactura,
-                fecha: new Date().toLocaleDateString(),
-                hora: new Date().toLocaleTimeString(),
-                cliente: cliente,
-                telefono: telefono,
-                direccion: direccion,
-                metodoPago: metodoPago,
-                vendedor: vendedor,
-                productos: JSON.parse(JSON.stringify(carritoItems)),
-                total: carritoItems.reduce((sum, item) => sum + item.total, 0)
-            };
-
-            // Guardar en historial de productos y deducir stock
-            carritoItems.forEach(item => {
-                const producto = appData.productos.find(p => p.id === item.id);
-                if (producto) {
-                    producto.stock -= item.cantidad;
-                }
-            });
-
-            appData.ventas.push(venta);
-            appData.numerosFacturaUsados.push(numeroFactura);
-
-            // Guardar o actualizar cliente
-            let clienteExistente = appData.clientes.find(c => c.nombre.toLowerCase() === cliente.toLowerCase());
-            if (!clienteExistente) {
-                clienteExistente = {
-                    id: 'CLI' + Date.now(),
-                    nombre: cliente,
-                    telefono: telefono,
-                    direccion: direccion,
-                    zona: direccion,
-                    fechaPrimeraCompra: new Date().toLocaleDateString(),
-                    totalCompras: 0,
-                    deudaActual: 0
-                };
-                appData.clientes.push(clienteExistente);
-            } else {
-                clienteExistente.telefono = telefono;
-                clienteExistente.direccion = direccion;
-            }
-
-            clienteExistente.totalCompras += venta.total;
-
-            if (metodoPago === 'Fiado/Crédito') {
-                let fiado = appData.fiados.find(f => f.id === clienteExistente.id);
-                if (!fiado) {
-                    fiado = {
-                        id: clienteExistente.id,
-                        cliente: cliente,
-                        telefono: telefono,
-                        zona: direccion,
-                        deudaTotal: 0,
-                        pagos: []
-                    };
-                    appData.fiados.push(fiado);
-                }
-                fiado.deudaTotal += venta.total;
-                clienteExistente.deudaActual = fiado.deudaTotal;
-            }
-
-            guardarDatos();
-
-            // Generar boleta
-            generarImagenBoleta(venta, telefono);
-        }
-
-        function generarImagenBoleta(venta, telefono) {
-            const boleta = `
-            <div class="boleta">
-                <div class="boleta-header">
-                    <div class="boleta-title">ESCAMILLA B. WILSON M.</div>
-                    <div class="boleta-info">
-                        Valencia, Edo. Carabobo, Venezuela<br>
-                        Teléf: 0414-4372956 / 0412-4749513<br>
-                        <br>
-                        Nota de Venta #${venta.numeroFactura}<br>
-                        Fecha: ${venta.fecha} ${venta.hora}
-                    </div>
-                </div>
-
-                <div class="boleta-detail">
-                    <strong>CLIENTE:</strong> ${venta.cliente}<br>
-                    <strong>DIRECCIÓN:</strong> ${venta.direccion}<br>
-                    <strong>TELÉFONO:</strong> ${venta.telefono}
-                </div>
-
-                <div class="boleta-products">
-                    <table style="width: 100%; font-size: 0.85rem;">
-                        <tr style="border-bottom: 1px solid #000; padding: 0.5rem 0;">
-                            <th style="text-align: left;">DESCRIPCIÓN</th>
-                            <th style="text-align: center;">CANT</th>
-                            <th style="text-align: right;">PRECIO</th>
-                            <th style="text-align: right;">TOTAL</th>
-                        </tr>
-                        ${venta.productos.map(p => `
-                            <tr style="padding: 0.5rem 0;">
-                                <td>${p.nombre}</td>
-                                <td style="text-align: center;">${p.cantidad}</td>
-                                <td style="text-align: right;">$${p.precioUnitario.toFixed(2)}</td>
-                                <td style="text-align: right;">$${p.total.toFixed(2)}</td>
-                            </tr>
-                        `).join('')}
-                    </table>
-                </div>
-
-                <div class="boleta-total">
-                    TOTAL: $${venta.total.toFixed(2)}
-                </div>
-
-                <div class="boleta-detail">
-                    <strong>MÉTODO:</strong> ${venta.metodoPago}<br>
-                    <strong>VENDEDOR:</strong> ${venta.vendedor}
-                </div>
-
-                <div class="boleta-footer">
-                    ¡Gracias por su compra!<br>
-                    <br>
-                    Desarrollado por Nexus Marketing<br>
-                    04244525765
-                </div>
-            </div>
-            `;
-
-            // Convertir a imagen
-            const div = document.createElement('div');
-            div.innerHTML = boleta;
-            div.style.display = 'none';
-            document.body.appendChild(div);
-
-            html2canvas(div.querySelector('.boleta'), { backgroundColor: '#fff' }).then(canvas => {
-                const link = document.createElement('a');
-                link.href = canvas.toDataURL('image/png');
-                link.download = `boleta_${venta.numeroFactura}.png`;
-                
-                // Enviar por WhatsApp
-                const mensajeWhatsApp = `Hola ${venta.cliente}, te envío tu nota de venta #${venta.numeroFactura}. Total: $${venta.total.toFixed(2)}`;
-                const urlWhatsApp = `https://api.whatsapp.com/send?phone=58${telefono.replace(/\D/g, '').slice(-10)}&text=${encodeURIComponent(mensajeWhatsApp)}`;
-                window.open(urlWhatsApp, '_blank');
-
-                // Descargar boleta
-                link.click();
-                document.body.removeChild(div);
-
-                // Limpiar carrito
-                carritoItems = [];
-                document.getElementById('clienteNombre').value = '';
-                document.getElementById('clienteTelefono').value = '';
-                document.getElementById('clienteDireccion').value = '';
-                document.getElementById('vendedor').value = '';
-                document.getElementById('numeroFactura').value = '';
-                renderizarCarrito();
-
-                mostrarToast('Venta completada y boleta generada', 'success');
-                renderizarProductos();
-            });
-        }
-
-        function verHistorialProducto(productoId) {
-            const producto = appData.productos.find(p => p.id === productoId);
-            if (!producto) return;
-
-            let historial = '<h3>' + producto.nombre + '</h3>';
-            historial += '<div style="font-size: 0.9rem;">';
-            
-            const ventasProducto = appData.ventas.filter(v => v.productos.some(p => p.id === productoId));
-            if (ventasProducto.length === 0) {
-                historial += '<p>Sin ventas registradas</p>';
-            } else {
-                ventasProducto.forEach(venta => {
-                    const item = venta.productos.find(p => p.id === productoId);
-                    historial += `
-                        <div class="historial-item">
-                            <div class="historial-fecha">${venta.fecha} ${venta.hora}</div>
-                            <div><strong>Cliente:</strong> ${venta.cliente}</div>
-                            <div><strong>Cantidad:</strong> ${item.cantidad} unidades</div>
-                            <div><strong>Precio unitario:</strong> $${item.precioUnitario.toFixed(2)}</div>
-                            <div><strong>Total:</strong> $${item.total.toFixed(2)}</div>
-                        </div>
-                    `;
-                });
-            }
-            historial += '</div>';
-
-            alert(historial);
-        }
-
-        // ==================== SECCIÓN ALMACÉN ====================
-        function abrirModalProducto() {
-            document.getElementById('modalProducto').classList.add('active');
-        }
-
-        function cerrarModalProducto() {
-            document.getElementById('modalProducto').classList.remove('active');
-            document.getElementById('formProducto').reset();
-        }
-
-        function guardarProducto() {
-            const codigo = document.getElementById('prodCodigo').value.trim();
-            const descripcion = document.getElementById('prodDescripcion').value.trim();
-            const categoria = document.getElementById('prodCategoria').value;
-            const stock = parseInt(document.getElementById('prodStock').value);
-            const precioCompra = parseFloat(document.getElementById('prodPrecioCompra').value);
-            const precioVenta = parseFloat(document.getElementById('prodPrecioVenta').value);
-
-            if (!codigo || !descripcion) {
-                mostrarToast('Complete todos los campos', 'error');
-                return;
-            }
-
-            if (appData.productos.some(p => p.codigo === codigo)) {
-                mostrarToast('Este código ya existe', 'error');
-                return;
-            }
-
-            const producto = {
-                id: 'PROD' + Date.now(),
-                codigo: codigo,
-                nombre: descripcion,
-                categoria: categoria,
-                descripcion: descripcion,
-                stock: stock,
-                precioCompra: precioCompra,
-                precioVenta: precioVenta,
-                imagen: '',
-                fechaIngreso: new Date().toLocaleString()
-            };
-
-            appData.productos.push(producto);
-            guardarDatos();
-            cerrarModalProducto();
-            renderizarProductos();
-            renderizarInventario();
-            mostrarToast('Producto agregado correctamente', 'success');
-        }
-
-        function renderizarInventario() {
-            const tbody = document.getElementById('inventarioBody');
-            tbody.innerHTML = appData.productos.map(prod => `
-                <tr>
-                    <td><strong>${prod.codigo}</strong></td>
-                    <td>${prod.nombre}</td>
-                    <td>${prod.categoria}</td>
-                    <td>${prod.stock}</td>
-                    <td>$${prod.precioCompra.toFixed(2)}</td>
-                    <td>$${prod.precioVenta.toFixed(2)}</td>
-                    <td>
-                        <button class="btn-secondary btn-sm" onclick="editarProducto('${prod.id}')">Editar</button>
-                        <button class="btn-danger btn-sm" onclick="eliminarProducto('${prod.id}')">Eliminar</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function filtrarInventario() {
-            const busqueda = document.getElementById('buscarInventario').value.toLowerCase();
-            const categoria = document.getElementById('filtroCategoria').value;
-
-            const filtrados = appData.productos.filter(p => 
-                (p.nombre.toLowerCase().includes(busqueda) || p.codigo.toLowerCase().includes(busqueda)) &&
-                (categoria === '' || p.categoria === categoria)
-            );
-
-            const tbody = document.getElementById('inventarioBody');
-            tbody.innerHTML = filtrados.map(prod => `
-                <tr>
-                    <td><strong>${prod.codigo}</strong></td>
-                    <td>${prod.nombre}</td>
-                    <td>${prod.categoria}</td>
-                    <td>${prod.stock}</td>
-                    <td>$${prod.precioCompra.toFixed(2)}</td>
-                    <td>$${prod.precioVenta.toFixed(2)}</td>
-                    <td>
-                        <button class="btn-secondary btn-sm" onclick="editarProducto('${prod.id}')">Editar</button>
-                        <button class="btn-danger btn-sm" onclick="eliminarProducto('${prod.id}')">Eliminar</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function editarProducto(id) {
-            const producto = appData.productos.find(p => p.id === id);
-            if (!producto) return;
-
-            document.getElementById('prodCodigo').value = producto.codigo;
-            document.getElementById('prodDescripcion').value = producto.nombre;
-            document.getElementById('prodCategoria').value = producto.categoria;
-            document.getElementById('prodStock').value = producto.stock;
-            document.getElementById('prodPrecioCompra').value = producto.precioCompra;
-            document.getElementById('prodPrecioVenta').value = producto.precioVenta;
-
-            const btn = document.querySelector('#modalProducto button[onclick="guardarProducto()"]');
-            btn.textContent = '✓ Actualizar Producto';
-            btn.onclick = () => {
-                producto.codigo = document.getElementById('prodCodigo').value.trim();
-                producto.nombre = document.getElementById('prodDescripcion').value.trim();
-                producto.categoria = document.getElementById('prodCategoria').value;
-                producto.stock = parseInt(document.getElementById('prodStock').value);
-                producto.precioCompra = parseFloat(document.getElementById('prodPrecioCompra').value);
-                producto.precioVenta = parseFloat(document.getElementById('prodPrecioVenta').value);
-
-                guardarDatos();
-                cerrarModalProducto();
-                renderizarProductos();
-                renderizarInventario();
-                mostrarToast('Producto actualizado', 'success');
-                
-                btn.textContent = '💾 Guardar Producto';
-                btn.onclick = guardarProducto;
-            };
-
-            document.getElementById('modalProducto').classList.add('active');
-        }
-
-        function eliminarProducto(id) {
-            if (confirm('¿Desea eliminar este producto?')) {
-                const motivo = prompt('Ingrese el motivo de retiro:');
-                if (motivo) {
-                    appData.productos = appData.productos.filter(p => p.id !== id);
-                    guardarDatos();
-                    renderizarProductos();
-                    renderizarInventario();
-                    mostrarToast('Producto eliminado', 'success');
-                }
-            }
-        }
-
-        function descargarInventario() {
-            const ws = XLSX.utils.json_to_sheet(appData.productos.map(p => ({
-                'Código': p.codigo,
-                'Descripción': p.nombre,
-                'Categoría': p.categoria,
-                'Stock': p.stock,
-                'Precio Compra': '$' + p.precioCompra.toFixed(2),
-                'Precio Venta': '$' + p.precioVenta.toFixed(2),
-                'Fecha Ingreso': p.fechaIngreso
-            })));
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
-            XLSX.writeFile(wb, 'inventario_' + new Date().toISOString().split('T')[0] + '.xlsx');
-            mostrarToast('Inventario descargado', 'success');
-        }
-
-        // ==================== SECCIÓN FIADOS ====================
-        function renderizarFiados() {
-            const tbody = document.getElementById('fiadosBody');
-            tbody.innerHTML = appData.fiados.map(fiado => `
-                <tr>
-                    <td><strong>${fiado.cliente}</strong></td>
-                    <td>${fiado.telefono}</td>
-                    <td>${fiado.zona}</td>
-                    <td>$${fiado.deudaTotal.toFixed(2)}</td>
-                    <td>
-                        ${fiado.deudaTotal > 0 ? '<span class="badge-estado badge-deuda">Deuda Vigente</span>' : '<span class="badge-estado badge-pagado">Pagado</span>'}
-                    </td>
-                    <td>
-                        ${fiado.deudaTotal > 0 ? `
-                            <button class="btn-primary btn-sm" onclick="abrirModalPagarFiado('${fiado.id}')">Pagar</button>
-                        ` : ''}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function filtrarFiados() {
-            const busqueda = document.getElementById('buscarFiados').value.toLowerCase();
-            const filtrados = appData.fiados.filter(f => 
-                f.cliente.toLowerCase().includes(busqueda) ||
-                f.telefono.includes(busqueda) ||
-                f.zona.toLowerCase().includes(busqueda)
-            );
-
-            const tbody = document.getElementById('fiadosBody');
-            tbody.innerHTML = filtrados.map(fiado => `
-                <tr>
-                    <td><strong>${fiado.cliente}</strong></td>
-                    <td>${fiado.telefono}</td>
-                    <td>${fiado.zona}</td>
-                    <td>$${fiado.deudaTotal.toFixed(2)}</td>
-                    <td>
-                        ${fiado.deudaTotal > 0 ? '<span class="badge-estado badge-deuda">Deuda Vigente</span>' : '<span class="badge-estado badge-pagado">Pagado</span>'}
-                    </td>
-                    <td>
-                        ${fiado.deudaTotal > 0 ? `
-                            <button class="btn-primary btn-sm" onclick="abrirModalPagarFiado('${fiado.id}')">Pagar</button>
-                        ` : ''}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        let fiadoEnEdicion = null;
-
-        function abrirModalPagarFiado(fiadoId) {
-            fiadoEnEdicion = fiadoId;
-            document.getElementById('modalPagarFiado').classList.add('active');
-        }
-
-        function cerrarModalPagarFiado() {
-            document.getElementById('modalPagarFiado').classList.remove('active');
-            fiadoEnEdicion = null;
-        }
-
-        function registrarPagoFiado() {
-            const monto = parseFloat(document.getElementById('montoPagar').value);
-            const metodoPago = document.getElementById('metodoPagoFiado').value;
-
-            if (!monto || monto <= 0) {
-                mostrarToast('Ingrese un monto válido', 'error');
-                return;
-            }
-
-            const fiado = appData.fiados.find(f => f.id === fiadoEnEdicion);
-            if (!fiado) return;
-
-            if (monto > fiado.deudaTotal) {
-                mostrarToast('El monto excede la deuda total', 'error');
-                return;
-            }
-
-            fiado.pagos.push({
-                fecha: new Date().toLocaleDateString(),
-                monto: monto,
-                metodoPago: metodoPago
-            });
-
-            fiado.deudaTotal -= monto;
-
-            if (fiado.deudaTotal === 0) {
-                const cliente = appData.clientes.find(c => c.id === fiadoEnEdicion);
-                if (cliente) cliente.deudaActual = 0;
-            }
-
-            guardarDatos();
-            cerrarModalPagarFiado();
-            renderizarFiados();
-            mostrarToast('Pago registrado correctamente', 'success');
-
-            document.getElementById('montoPagar').value = '';
-        }
-
-        function descargarFiados() {
-            const ws = XLSX.utils.json_to_sheet(appData.fiados.map(f => ({
-                'Cliente': f.cliente,
-                'Teléfono': f.telefono,
-                'Zona': f.zona,
-                'Deuda Total': '$' + f.deudaTotal.toFixed(2),
-                'Estado': f.deudaTotal > 0 ? 'Deuda Vigente' : 'Pagado'
-            })));
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Fiados');
-            XLSX.writeFile(wb, 'fiados_' + new Date().toISOString().split('T')[0] + '.xlsx');
-            mostrarToast('Fiados descargados', 'success');
-        }
-
-        // ==================== SECCIÓN CLIENTES ====================
-        function renderizarClientes() {
-            const tbody = document.getElementById('clientesBody');
-            tbody.innerHTML = appData.clientes.map(cliente => `
-                <tr>
-                    <td><strong>${cliente.nombre}</strong></td>
-                    <td>${cliente.telefono}</td>
-                    <td>${cliente.zona}</td>
-                    <td>$${cliente.totalCompras.toFixed(2)}</td>
-                    <td>
-                        ${cliente.deudaActual > 0 ? `
-                            <span style="color: red; font-weight: bold;">$${cliente.deudaActual.toFixed(2)}</span>
-                        ` : 'Sin deuda'}
-                    </td>
-                    <td>
-                        <button class="btn-secondary btn-sm" onclick="verDetallesCliente('${cliente.id}')">Ver Detalles</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function filtrarClientes() {
-            const busqueda = document.getElementById('buscarClientes').value.toLowerCase();
-            const filtrados = appData.clientes.filter(c =>
-                c.nombre.toLowerCase().includes(busqueda) ||
-                c.telefono.includes(busqueda) ||
-                c.zona.toLowerCase().includes(busqueda)
-            );
-
-            const tbody = document.getElementById('clientesBody');
-            tbody.innerHTML = filtrados.map(cliente => `
-                <tr>
-                    <td><strong>${cliente.nombre}</strong></td>
-                    <td>${cliente.telefono}</td>
-                    <td>${cliente.zona}</td>
-                    <td>$${cliente.totalCompras.toFixed(2)}</td>
-                    <td>
-                        ${cliente.deudaActual > 0 ? `
-                            <span style="color: red; font-weight: bold;">$${cliente.deudaActual.toFixed(2)}</span>
-                        ` : 'Sin deuda'}
-                    </td>
-                    <td>
-                        <button class="btn-secondary btn-sm" onclick="verDetallesCliente('${cliente.id}')">Ver Detalles</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function verDetallesCliente(clienteId) {
-            const cliente = appData.clientes.find(c => c.id === clienteId);
-            if (!cliente) return;
-
-            const ventasCliente = appData.ventas.filter(v => v.cliente === cliente.nombre);
-            let detalles = `<h3>${cliente.nombre}</h3>`;
-            detalles += `
-                <div style="margin: 1rem 0; font-size: 0.9rem;">
-                    <div><strong>Teléfono:</strong> ${cliente.telefono}</div>
-                    <div><strong>Dirección:</strong> ${cliente.direccion}</div>
-                    <div><strong>Primera compra:</strong> ${cliente.fechaPrimeraCompra}</div>
-                    <div><strong>Total compras:</strong> $${cliente.totalCompras.toFixed(2)}</div>
-                    <div><strong>Deuda actual:</strong> ${cliente.deudaActual > 0 ? '$' + cliente.deudaActual.toFixed(2) : 'Sin deuda'}</div>
-                    <br>
-                    <strong>Historial de compras (${ventasCliente.length}):</strong>
-                    <div style="margin-top: 0.5rem;">
-            `;
-
-            if (ventasCliente.length === 0) {
-                detalles += '<p>Sin compras registradas</p>';
-            } else {
-                ventasCliente.forEach(venta => {
-                    detalles += `
-                        <div class="historial-item">
-                            <div class="historial-fecha">${venta.fecha} ${venta.hora}</div>
-                            <div><strong>Factura:</strong> ${venta.numeroFactura}</div>
-                            <div><strong>Total:</strong> $${venta.total.toFixed(2)}</div>
-                            <div><strong>Método:</strong> ${venta.metodoPago}</div>
-                        </div>
-                    `;
-                });
-            }
-            detalles += '</div></div>';
-
-            alert(detalles);
-        }
-
-        // ==================== SECCIÓN PROVEEDORES ====================
-        function abrirModalProveedor() {
-            document.getElementById('modalProveedor').classList.add('active');
-        }
-
-        function cerrarModalProveedor() {
-            document.getElementById('modalProveedor').classList.remove('active');
-            document.getElementById('formProveedor').reset();
-        }
-
-        function guardarProveedor() {
-            const empresa = document.getElementById('provEmpresa').value.trim();
-            const contacto = document.getElementById('provContacto').value.trim();
-            const telefono = document.getElementById('provTelefono').value.trim();
-            const direccion = document.getElementById('provDireccion').value.trim();
-
-            if (!empresa || !contacto || !telefono || !direccion) {
-                mostrarToast('Complete todos los campos', 'error');
-                return;
-            }
-
-            const proveedor = {
-                id: 'PROV' + Date.now(),
-                empresa: empresa,
-                contacto: contacto,
-                telefono: telefono,
-                direccion: direccion,
-                deudaActual: 0,
-                pagos: []
-            };
-
-            appData.proveedores.push(proveedor);
-            guardarDatos();
-            cerrarModalProveedor();
-            renderizarProveedores();
-            mostrarToast('Proveedor agregado correctamente', 'success');
-        }
-
-        function renderizarProveedores() {
-            const tbody = document.getElementById('proveedoresBody');
-            tbody.innerHTML = appData.proveedores.map(prov => `
-                <tr>
-                    <td><strong>${prov.empresa}</strong></td>
-                    <td>${prov.contacto}</td>
-                    <td>${prov.telefono}</td>
-                    <td>$${prov.deudaActual.toFixed(2)}</td>
-                    <td>
-                        ${prov.deudaActual > 0 ? '<span class="badge-estado badge-deuda">Deuda Vigente</span>' : '<span class="badge-estado badge-pagado">Pagado</span>'}
-                    </td>
-                    <td>
-                        <button class="btn-secondary btn-sm" onclick="verDetallesProveedor('${prov.id}')">Ver Detalles</button>
-                        ${prov.deudaActual > 0 ? `<button class="btn-primary btn-sm" onclick="abrirModalPagarProveedor('${prov.id}')">Pagar</button>` : ''}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function filtrarProveedores() {
-            const busqueda = document.getElementById('buscarProveedores').value.toLowerCase();
-            const filtrados = appData.proveedores.filter(p =>
-                p.empresa.toLowerCase().includes(busqueda) ||
-                p.contacto.toLowerCase().includes(busqueda) ||
-                p.telefono.includes(busqueda)
-            );
-
-            const tbody = document.getElementById('proveedoresBody');
-            tbody.innerHTML = filtrados.map(prov => `
-                <tr>
-                    <td><strong>${prov.empresa}</strong></td>
-                    <td>${prov.contacto}</td>
-                    <td>${prov.telefono}</td>
-                    <td>$${prov.deudaActual.toFixed(2)}</td>
-                    <td>
-                        ${prov.deudaActual > 0 ? '<span class="badge-estado badge-deuda">Deuda Vigente</span>' : '<span class="badge-estado badge-pagado">Pagado</span>'}
-                    </td>
-                    <td>
-                        <button class="btn-secondary btn-sm" onclick="verDetallesProveedor('${prov.id}')">Ver Detalles</button>
-                        ${prov.deudaActual > 0 ? `<button class="btn-primary btn-sm" onclick="abrirModalPagarProveedor('${prov.id}')">Pagar</button>` : ''}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function verDetallesProveedor(proveedorId) {
-            const proveedor = appData.proveedores.find(p => p.id === proveedorId);
-            if (!proveedor) return;
-
-            let detalles = `<h3>${proveedor.empresa}</h3>`;
-            detalles += `
-                <div style="margin: 1rem 0; font-size: 0.9rem;">
-                    <div><strong>Contacto:</strong> ${proveedor.contacto}</div>
-                    <div><strong>Teléfono:</strong> ${proveedor.telefono}</div>
-                    <div><strong>Dirección:</strong> ${proveedor.direccion}</div>
-                    <div><strong>Deuda Actual:</strong> $${proveedor.deudaActual.toFixed(2)}</div>
-                    <br>
-                    <strong>Historial de Pagos (${proveedor.pagos.length}):</strong>
-                    <div style="margin-top: 0.5rem;">
-            `;
-
-            if (proveedor.pagos.length === 0) {
-                detalles += '<p>Sin pagos registrados</p>';
-            } else {
-                proveedor.pagos.forEach(pago => {
-                    detalles += `
-                        <div class="historial-item">
-                            <div class="historial-fecha">${pago.fecha}</div>
-                            <div><strong>Monto:</strong> $${pago.monto.toFixed(2)}</div>
-                            <div><strong>Método:</strong> ${pago.metodoPago}</div>
-                        </div>
-                    `;
-                });
-            }
-            detalles += '</div></div>';
-
-            alert(detalles);
-        }
-
-        let proveedorEnEdicion = null;
-
-        function abrirModalPagarProveedor(proveedorId) {
-            proveedorEnEdicion = proveedorId;
-            const proveedor = appData.proveedores.find(p => p.id === proveedorId);
-            alert(`Deuda actual: $${proveedor.deudaActual.toFixed(2)}`);
-            
-            const monto = prompt('Ingrese el monto a pagar:');
-            if (monto && parseFloat(monto) > 0) {
-                const metodoPago = 'Transferencia';
-                const proveedor = appData.proveedores.find(p => p.id === proveedorEnEdicion);
-                if (proveedor) {
-                    proveedor.pagos.push({
-                        fecha: new Date().toLocaleDateString(),
-                        monto: parseFloat(monto),
-                        metodoPago: metodoPago
-                    });
-                    proveedor.deudaActual -= parseFloat(monto);
-                    guardarDatos();
-                    renderizarProveedores();
-                    mostrarToast('Pago registrado', 'success');
-                }
-            }
-            proveedorEnEdicion = null;
-        }
-
-        function descargarProveedores() {
-            const ws = XLSX.utils.json_to_sheet(appData.proveedores.map(p => ({
-                'Empresa': p.empresa,
-                'Contacto': p.contacto,
-                'Teléfono': p.telefono,
-                'Dirección': p.direccion,
-                'Deuda Actual': '$' + p.deudaActual.toFixed(2),
-                'Estado': p.deudaActual > 0 ? 'Deuda Vigente' : 'Pagado'
-            })));
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Proveedores');
-            XLSX.writeFile(wb, 'proveedores_' + new Date().toISOString().split('T')[0] + '.xlsx');
-            mostrarToast('Proveedores descargados', 'success');
-        }
-
-        // ==================== SECCIÓN REPORTES ====================
-        function renderizarVentas() {
-            const hoy = new Date().toLocaleDateString();
-            const ventasHoy = appData.ventas.filter(v => v.fecha === hoy);
-
-            const tbody = document.getElementById('ventasBody');
-            tbody.innerHTML = ventasHoy.map(venta => `
-                <tr>
-                    <td>${venta.numeroFactura}</td>
-                    <td>${venta.hora}</td>
-                    <td>${venta.cliente}</td>
-                    <td>${venta.metodoPago}</td>
-                    <td>${venta.vendedor}</td>
-                    <td>$${venta.total.toFixed(2)}</td>
-                </tr>
-            `).join('');
-        }
-
-        function renderizarGraficos() {
-            // Gráfico de ventas por día
-            const ventasPorDia = {};
-            appData.ventas.forEach(v => {
-                ventasPorDia[v.fecha] = (ventasPorDia[v.fecha] || 0) + v.total;
-            });
-
-            const ctx1 = document.getElementById('ventasPorDia');
-            if (ctx1) {
-                new Chart(ctx1, {
-                    type: 'line',
-                    data: {
-                        labels: Object.keys(ventasPorDia),
-                        datasets: [{
-                            label: 'Ventas por Día ($)',
-                            data: Object.values(ventasPorDia),
-                            borderColor: '#667eea',
-                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false
-                    }
-                });
-            }
-
-            // Gráfico de ventas por método de pago
-            const ventasPorMetodo = {};
-            appData.ventas.forEach(v => {
-                ventasPorMetodo[v.metodoPago] = (ventasPorMetodo[v.metodoPago] || 0) + v.total;
-            });
-
-            const ctx2 = document.getElementById('ventasPorMetodo');
-            if (ctx2) {
-                new Chart(ctx2, {
-                    type: 'doughnut',
-                    data: {
-                        labels: Object.keys(ventasPorMetodo),
-                        datasets: [{
-                            data: Object.values(ventasPorMetodo),
-                            backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe']
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false
-                    }
-                });
-            }
-        }
-
-        function descargarReporteVentas() {
-            const ws = XLSX.utils.json_to_sheet(appData.ventas.map(v => ({
-                'Factura': v.numeroFactura,
-                'Fecha': v.fecha,
-                'Hora': v.hora,
-                'Cliente': v.cliente,
-                'Productos': v.productos.map(p => p.nombre).join(', '),
-                'Método de Pago': v.metodoPago,
-                'Vendedor': v.vendedor,
-                'Total': '$' + v.total.toFixed(2)
-            })));
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Ventas');
-            XLSX.writeFile(wb, 'reporte_ventas_' + new Date().toISOString().split('T')[0] + '.xlsx');
-            mostrarToast('Reporte descargado', 'success');
-        }
-
-        function descargarInventarioHoy() {
-            descargarInventario();
-        }
-
-        function cerrarDia() {
-            const hoy = new Date().toLocaleDateString();
-            const ventasHoy = appData.ventas.filter(v => v.fecha === hoy);
-            const totalHoy = ventasHoy.reduce((sum, v) => sum + v.total, 0);
-
-            alert(`
-CIERRE DE DÍA - ${hoy}
-
-Total de ventas: ${ventasHoy.length}
-Monto total: $${totalHoy.toFixed(2)}
-
-${ventasHoy.length === 0 ? 'Sin ventas registradas' : 'Detalles:'}
-${ventasHoy.slice(0, 5).map(v => `- ${v.numeroFactura}: $${v.total.toFixed(2)}`).join('\n')}
-${ventasHoy.length > 5 ? `... y ${ventasHoy.length - 5} más` : ''}
-            `);
-        }
-
-        // ==================== UTILIDADES ====================
-        function autocompletarCliente() {
-            const nombre = document.getElementById('clienteNombre').value.trim();
-            const cliente = appData.clientes.find(c => c.nombre.toLowerCase() === nombre.toLowerCase());
-            
-            if (cliente) {
-                document.getElementById('clienteTelefono').value = cliente.telefono;
-                document.getElementById('clienteDireccion').value = cliente.direccion;
-            }
-        }
-
-        function mostrarToast(mensaje, tipo = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast ${tipo}`;
-            toast.innerHTML = `<strong>${tipo === 'error' ? '✗' : tipo === 'success' ? '✓' : 'ℹ'}</strong> ${mensaje}`;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-
-        // ==================== INICIAR ====================
-        window.addEventListener('load', inicializar);
-    </script>
+  </div>
+</section>
+
+<!-- MAPA -->
+<section id="mapa">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Mapa interactivo</p>
+      <h2>Clubes, parques y plazas cerca de ti</h2>
+      <p>Filtra por tipo de espacio o disciplina, y haz clic sobre un punto para ver su ficha completa. El mapa se sigue completando con cada nuevo espacio y club afiliado.</p>
+    </div>
+    <div class="mapa-wrap reveal">
+      <div class="mapa-panel">
+        <div class="mapa-filtros" id="filtrosTipo">
+          <button class="filtro-chip active" data-tipo="todos">Todos</button>
+          <button class="filtro-chip" data-tipo="club">Clubes</button>
+          <button class="filtro-chip" data-tipo="parque">Parques</button>
+          <button class="filtro-chip" data-tipo="plaza">Plazas</button>
+        </div>
+        <select class="mapa-select" id="disciplinaSelect">
+          <option value="">Filtrar por disciplina…</option>
+        </select>
+        <select class="mapa-select" id="espacioSelect">
+          <option value="">Ir directo a un espacio…</option>
+        </select>
+
+        <div class="ficha-placeholder" id="fichaPlaceholder">
+          Selecciona un punto en el mapa o en la lista para ver la ficha del club o espacio: dirección, disciplina, teléfono y contacto directo.
+        </div>
+        <div class="ficha" id="ficha">
+          <div class="ficha-header">
+            <img class="ficha-logo" id="fichaLogo" src="" alt="">
+            <div><span class="ficha-tipo" id="fichaTipo">CLUB</span><h4 id="fichaNombre">—</h4></div>
+          </div>
+          <div class="ficha-item" id="fichaDisciplinaWrap"><strong>Disciplina</strong><p id="fichaDisciplina">—</p></div>
+          <div class="ficha-item"><strong>Dirección</strong><p id="fichaDireccion">—</p></div>
+          <div class="ficha-item" id="fichaTelWrap"><strong>Teléfono</strong><p id="fichaTelefono">—</p></div>
+          <div class="ficha-actions">
+            <a href="#" id="fichaWsp" class="ficha-wsp" target="_blank" rel="noopener">Contactar por WhatsApp</a>
+            <a href="#" id="fichaUbi" class="ficha-ubi" target="_blank" rel="noopener">Cómo llegar (Google Maps)</a>
+          </div>
+        </div>
+      </div>
+      <div id="leafletMap"></div>
+    </div>
+  </div>
+</section>
+
+<!-- CLUBES AFILIADOS -->
+<section id="clubes" class="bg-alt">
+  <div class="container">
+    <div class="section-head reveal">
+      <p class="eyebrow">Clubes afiliados</p>
+      <h2>Primeros clubes en la red CODERE</h2>
+      <p>Cada club afiliado recibe su propia ficha digital en el mapa. Este directorio crece con cada nuevo registro.</p>
+    </div>
+    <div class="clubes-grid" id="clubesGrid"></div>
+  </div>
+</section>
+
+<!-- REGISTRO -->
+<section id="registro">
+  <div class="container">
+    <div class="registro-banner reveal">
+      <div>
+        <h3>¿Tienes un club, escuela deportiva o espacio recreativo?</h3>
+        <p>Regístralo en CODERE y aparece con tu propia ficha digital en el mapa: nombre, disciplina, dirección, teléfono y logo del club.</p>
+      </div>
+      <a href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener" class="btn">Ir al formulario de registro</a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO -->
+<section id="contacto" class="bg-navy">
+  <div class="container contacto-grid">
+    <div class="reveal">
+      <p class="eyebrow">Contacto</p>
+      <h2>Habla con el equipo de CODERE</h2>
+      <p style="color:#B9CEDC;margin-top:.8rem;">Escríbenos por WhatsApp, súmate al canal informativo o síguenos en Instagram para conocer las próximas jornadas deportivas y recreativas.</p>
+    </div>
+    <div class="reveal">
+      <div class="contacto-item">
+        <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/iconodewhatsapp.png" alt="WhatsApp" loading="lazy">
+        <div><strong>Teléfono / WhatsApp</strong><span>0412-4146837</span></div>
+      </div>
+      <div class="contacto-item">
+        <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/iconoinstagram.png" alt="Instagram" loading="lazy">
+        <div><strong>Instagram</strong><span>@concertacion.ve</span></div>
+      </div>
+      <div class="contacto-item">
+        <span style="font-size:1.4rem">📢</span>
+        <div><strong>Canal de WhatsApp</strong><span>Novedades y jornadas deportivas</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="#top" class="brand" style="color:#fff;margin-bottom:.9rem;">
+          <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/logo%20concertacion%20sin%20fondo.png" alt="Concertación" style="height:36px;width:36px;">
+          <span style="color:#fff">CODERE</span>
+        </a>
+        <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/imagenhomeconcertacion.png" alt="Concertación" style="border-radius:10px;margin-top:.8rem;max-width:220px;" loading="lazy">
+        <div class="footer-social">
+          <a href="https://whatsapp.com/channel/0029VbCN9F9Bqbr6yvRiYF3L" target="_blank" rel="noopener"><img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/iconodewhatsapp.png" alt="Canal de WhatsApp"></a>
+          <a href="https://www.instagram.com/concertacion.ve/" target="_blank" rel="noopener"><img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/iconoinstagram.png" alt="Instagram"></a>
+        </div>
+      </div>
+      <div>
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="#disciplinas">Disciplinas</a></li>
+          <li><a href="#mapa">Mapa interactivo</a></li>
+          <li><a href="#clubes">Clubes afiliados</a></li>
+          <li><a href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener">Registro de club</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li>0412-4146837</li>
+          <li>@concertacion.ve</li>
+          <li>Secretaría de Deporte y Recreación</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> CODERE — Concertación Ciudadana.</span>
+      <span>Conectando el deporte y la recreación desde los liderazgos focales.</span>
+    </div>
+  </div>
+</footer>
+
+<a class="whatsapp-float" href="https://wa.me/584124146837" target="_blank" rel="noopener" aria-label="Escribir por WhatsApp">
+  <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/iconodewhatsapp.png" alt="">
+</a>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+document.getElementById('year').textContent = new Date().getFullYear();
+const BASE = 'https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/';
+
+/* NAV */
+const header = document.getElementById('siteHeader');
+addEventListener('scroll', () => header.classList.toggle('scrolled', scrollY > 10));
+const navToggle = document.getElementById('navToggle'), navLinks = document.getElementById('navLinks');
+navToggle.addEventListener('click', () => { const open = navLinks.classList.toggle('open'); navToggle.setAttribute('aria-expanded', open); });
+navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+/* REVEAL */
+const io = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold:.15 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+/* ======================================================================
+   BASE DE DATOS DE ESPACIOS Y CLUBES
+   Para agregar un nuevo club o espacio, copia un objeto de este arreglo,
+   pégalo antes del cierre "]" y actualiza los datos. Campos:
+   tipo: "club" | "parque" | "plaza"
+   disciplina: nombre exacto de la disciplina (o "" si no aplica)
+   logo: deja "" si el espacio no tiene logo de club
+   ====================================================================== */
+const espacios = [
+  {
+    id:'club-voleibol-los-cerritos', tipo:'club', nombre:'Club Voleibol Los Cerritos',
+    disciplina:'Voleibol (Cancha y Playa)',
+    direccion:'Carabobo, Los Guayos, Municipio Los Guayos, Parroquia Los Guayos, Sector Paraparal, Cancha Múltiple Los Cerritos',
+    telefono:'04124146837', logo: BASE + 'club%20voleibol%20los%20cerritos.png',
+    lat:10.169220554743173, lng:-67.90890485794485
+  },
+  {
+    id:'parque-los-jabillos', tipo:'parque', nombre:'Parque Los Jabillos',
+    disciplina:'', direccion:'Los Guayos, Carabobo', telefono:'', logo:'',
+    lat:10.181166662109066, lng:-67.93110013787475
+  },
+  {
+    id:'plaza-los-guayos', tipo:'plaza', nombre:'Plaza Los Guayos',
+    disciplina:'', direccion:'Los Guayos, Carabobo', telefono:'', logo:'',
+    lat:10.188656181222758, lng:-67.93723971473415
+  },
+  {
+    id:'parque-las-aguitas', tipo:'parque', nombre:'Parque Las Aguitas Sector 3',
+    disciplina:'', direccion:'Los Guayos, Carabobo', telefono:'', logo:'',
+    lat:10.170841076483812, lng:-67.92983024922457
+  }
+];
+
+/* CLUBES AFILIADOS (tarjetas) */
+const clubesGrid = document.getElementById('clubesGrid');
+const clubes = espacios.filter(e => e.tipo === 'club');
+clubesGrid.innerHTML = clubes.map(c => `
+  <div class="club-card">
+    <img src="${c.logo}" alt="Logo ${c.nombre}" loading="lazy">
+    <h4>${c.nombre}</h4>
+    <span>${c.disciplina}</span>
+    <p>${c.direccion}</p>
+    <a href="https://wa.me/58${c.telefono.replace(/^0/,'')}" target="_blank" rel="noopener">Contactar ↗</a>
+  </div>`).join('') + `
+  <div class="club-card placeholder">
+    <div class="plus">+</div>
+    <p>Tu club puede aparecer aquí</p>
+    <a href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener">Registrar club</a>
+  </div>`;
+
+/* FILTROS: disciplinas y selección directa */
+const disciplinaSelect = document.getElementById('disciplinaSelect');
+[...new Set(espacios.map(e => e.disciplina).filter(Boolean))].forEach(d => disciplinaSelect.insertAdjacentHTML('beforeend', `<option value="${d}">${d}</option>`));
+const espacioSelect = document.getElementById('espacioSelect');
+espacios.forEach(e => espacioSelect.insertAdjacentHTML('beforeend', `<option value="${e.id}">${e.nombre}</option>`));
+
+/* FICHA */
+const fichaPlaceholder = document.getElementById('fichaPlaceholder'), ficha = document.getElementById('ficha');
+const fichaLogo = document.getElementById('fichaLogo'), fichaTipo = document.getElementById('fichaTipo'),
+      fichaNombre = document.getElementById('fichaNombre'), fichaDisciplinaWrap = document.getElementById('fichaDisciplinaWrap'),
+      fichaDisciplina = document.getElementById('fichaDisciplina'), fichaDireccion = document.getElementById('fichaDireccion'),
+      fichaTelWrap = document.getElementById('fichaTelWrap'), fichaTelefono = document.getElementById('fichaTelefono'),
+      fichaWsp = document.getElementById('fichaWsp'), fichaUbi = document.getElementById('fichaUbi');
+
+const etiquetaTipo = { club:'Club deportivo', parque:'Parque', plaza:'Plaza' };
+const logoGenerico = { parque:'🌳', plaza:'🏛️', club:'🏅' };
+
+function mostrarFicha(e){
+  fichaTipo.textContent = etiquetaTipo[e.tipo] || e.tipo;
+  fichaNombre.textContent = e.nombre;
+  if (e.logo){ fichaLogo.src = e.logo; fichaLogo.style.display = 'block'; }
+  else { fichaLogo.style.display = 'none'; }
+  if (e.disciplina){ fichaDisciplinaWrap.style.display = 'block'; fichaDisciplina.textContent = e.disciplina; }
+  else { fichaDisciplinaWrap.style.display = 'none'; }
+  fichaDireccion.textContent = e.direccion || 'Sin dirección registrada aún.';
+  if (e.telefono){
+    fichaTelWrap.style.display = 'block'; fichaTelefono.textContent = e.telefono;
+    fichaWsp.style.display = 'block'; fichaWsp.href = `https://wa.me/58${e.telefono.replace(/^0/,'')}`;
+  } else {
+    fichaTelWrap.style.display = 'none'; fichaWsp.style.display = 'none';
+  }
+  fichaUbi.href = `https://www.google.com/maps?q=${e.lat},${e.lng}`;
+  fichaPlaceholder.style.display = 'none'; ficha.classList.add('show');
+}
+espacioSelect.addEventListener('change', ev => { const e = espacios.find(x => x.id === ev.target.value); if (e) mostrarFicha(e); });
+
+/* MAPA LEAFLET */
+const map = L.map('leafletMap', { scrollWheelZoom:false }).setView([10.178, -67.925], 13.5);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution:'&copy; OpenStreetMap &copy; CARTO', maxZoom:18 }).addTo(map);
+
+/* Capas administrativas (estados y parroquias) como referencia de fondo */
+function nombreDe(props){ return props.shapeName || props.NAME_1 || props.NAME_2 || props.name || 'Sin nombre'; }
+[[BASE + 'geoBoundaries-VEN-ADM1_simplified.geojson', { color:'#0B2545', weight:1, fillOpacity:0 }],
+ [BASE + 'geoBoundaries-VEN-ADM2_simplified.geojson', { color:'#176B43', weight:.6, fillOpacity:0, dashArray:'3,3' }]
+].forEach(([url, estilo]) => {
+  fetch(url).then(r => r.json()).then(gj => {
+    L.geoJSON(gj, { style: estilo, onEachFeature:(f,l) => l.bindTooltip(nombreDe(f.properties), {sticky:true}) }).addTo(map);
+  }).catch(()=>{});
+});
+
+function crearIcono(tipo){
+  const emoji = { club:'🏅', parque:'🌳', plaza:'🏛️' }[tipo] || '📍';
+  return L.divIcon({
+    className:'', html:`<div style="width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px -4px rgba(0,0,0,.5);" class="pin-${tipo}"><span style="transform:rotate(45deg);font-size:1rem;">${emoji}</span></div>`,
+    iconSize:[34,34], iconAnchor:[17,34]
+  });
+}
+let marcadores = [];
+function pintarMarcadores(filtroTipo, filtroDisciplina){
+  marcadores.forEach(m => map.removeLayer(m));
+  marcadores = [];
+  espacios.filter(e => (filtroTipo==='todos'||e.tipo===filtroTipo) && (!filtroDisciplina||e.disciplina===filtroDisciplina))
+    .forEach(e => {
+      const m = L.marker([e.lat, e.lng], { icon: crearIcono(e.tipo) }).addTo(map);
+      m.bindTooltip(e.nombre, { direction:'top', offset:[0,-30] });
+      m.on('click', () => mostrarFicha(e));
+      marcadores.push(m);
+    });
+}
+pintarMarcadores('todos', '');
+
+document.getElementById('filtrosTipo').addEventListener('click', ev => {
+  if (ev.target.tagName !== 'BUTTON') return;
+  document.querySelectorAll('#filtrosTipo .filtro-chip').forEach(c => c.classList.remove('active'));
+  ev.target.classList.add('active');
+  pintarMarcadores(ev.target.dataset.tipo, disciplinaSelect.value);
+});
+disciplinaSelect.addEventListener('change', () => {
+  const tipoActivo = document.querySelector('#filtrosTipo .filtro-chip.active').dataset.tipo;
+  pintarMarcadores(tipoActivo, disciplinaSelect.value);
+});
+</script>
 </body>
 </html>
