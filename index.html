@@ -10,24 +10,24 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Work+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" integrity="sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb1Xig==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
 
 <style>
   :root{
-    /* === CODERE token system — distinto a la paleta institucional azul/oro === */
-    --turf:        #122E23;   /* verde césped, casi negro — base oscura */
-    --turf-2:      #1B4432;   /* verde césped secundario, paneles */
-    --turf-3:      #22543F;   /* verde césped claro, bordes */
-    --lime:        #C6FF3D;   /* marcador digital / acento de acción */
-    --lime-dim:    #9CCB2E;
-    --orange:      #F2600C;   /* silbato — canchas, energía, CTA principal */
-    --orange-dim:  #C94E09;
-    --gold:        #C49A22;   /* enlace visual con Concertación — uso puntual */
-    --cream:       #F6F2E7;   /* fondo cálido, tribuna */
-    --cream-2:     #EDE6D3;
-    --ink:         #121810;   /* texto principal */
-    --ink-soft:    #45514A;
-    --line:        rgba(18,24,16,0.12);
+    /* === CODERE token system — acoplado al azul y oro del logo de Concertación === */
+    --turf:        #0B2A55;   /* azul institucional oscuro — base */
+    --turf-2:      #123568;   /* azul secundario, paneles */
+    --turf-3:      #1B4886;   /* azul claro, bordes */
+    --lime:        #C49A22;   /* oro institucional — acento de marcador */
+    --lime-dim:    #A67F1B;
+    --orange:      #003B95;   /* azul institucional — CTA principal */
+    --orange-dim:  #002C70;
+    --gold:        #C49A22;   /* oro institucional — uso puntual */
+    --cream:       #F5F3EC;   /* fondo cálido, tribuna */
+    --cream-2:     #ECE7D8;
+    --ink:         #16203A;   /* texto principal */
+    --ink-soft:    #4B5568;
+    --line:        rgba(22,32,58,0.12);
     --white:       #FFFDF8;
 
     --display: 'Anton', sans-serif;
@@ -488,11 +488,11 @@
       <div id="map"></div>
       <div class="map-legend">
         <b>Leyenda</b>
-        <div class="legend-row"><span class="legend-dot" style="background:#E63946"></span>Club afiliado</div>
-        <div class="legend-row"><span class="legend-dot" style="background:#F2600C"></span>Cancha deportiva</div>
-        <div class="legend-row"><span class="legend-dot" style="background:#2E7D32"></span>Campo de béisbol</div>
-        <div class="legend-row"><span class="legend-dot" style="background:#52B788"></span>Parque</div>
-        <div class="legend-row"><span class="legend-dot" style="background:#C49A22"></span>Plaza</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#C49A22"></span>Club afiliado</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#003B95"></span>Cancha deportiva</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#1B5E70"></span>Campo de béisbol</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#5C7A5A"></span>Parque</div>
+        <div class="legend-row"><span class="legend-dot" style="background:#8C6239"></span>Plaza</div>
       </div>
     </div>
     <div class="map-controls">
@@ -606,7 +606,7 @@
   <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/iconodewhatsapp.png?raw=true" alt="">
 </a>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 
 <script>
   // ===== Nav toggle (mobile) =====
@@ -618,11 +618,11 @@
   // ===== Datos de espacios y clubes =====
   // type: club | cancha | campo | parque | plaza
   const CATEGORY_STYLE = {
-    club:   { color:'#E63946', label:'Club afiliado' },
-    cancha: { color:'#F2600C', label:'Cancha deportiva' },
-    campo:  { color:'#2E7D32', label:'Campo de béisbol' },
-    parque: { color:'#52B788', label:'Parque' },
-    plaza:  { color:'#C49A22', label:'Plaza' }
+    club:   { color:'#C49A22', label:'Club afiliado' },
+    cancha: { color:'#003B95', label:'Cancha deportiva' },
+    campo:  { color:'#1B5E70', label:'Campo de béisbol' },
+    parque: { color:'#5C7A5A', label:'Parque' },
+    plaza:  { color:'#8C6239', label:'Plaza' }
   };
 
   const spaces = [
