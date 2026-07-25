@@ -212,13 +212,36 @@
   .mapa-envoltorio{
     border-radius:var(--radio); overflow:hidden; box-shadow:var(--sombra); border:1px solid var(--linea);
   }
-  #mapa{height:560px; width:100%; background:#dfe6df;}
+  .mapa-envoltorio{position:relative;}
+  #mapa-leaflet{height:620px; width:100%; background:#dfe6df; z-index:1;}
+  @media (max-width:640px){ #mapa-leaflet{height:460px;} }
+  .aviso-scroll{
+    position:absolute; inset:0; z-index:400; display:flex; align-items:center; justify-content:center;
+    background:rgba(19,32,24,0.35); color:#fff; font-weight:700; font-size:15px; text-align:center;
+    padding:20px; opacity:0; pointer-events:none; transition:opacity .2s ease;
+  }
+  .aviso-scroll.visible{opacity:1;}
   .leyenda-mapa{
-    display:flex; flex-wrap:wrap; gap:18px; padding:16px 22px; background:#fff;
+    display:flex; flex-wrap:wrap; align-items:center; gap:18px; padding:16px 22px; background:#fff;
     border-top:1px solid var(--linea); font-size:13.5px;
   }
   .leyenda-item{display:flex; align-items:center; gap:8px; color:var(--texto-suave); font-weight:600;}
   .punto{width:12px; height:12px; border-radius:50%; display:inline-block; flex-shrink:0;}
+  .leyenda-mapa .contador-espacios{
+    margin-left:auto; font-family:'Space Mono', monospace; font-size:12.5px; color:var(--texto-suave);
+  }
+  .leaflet-control-layers{border-radius:10px !important; box-shadow:var(--sombra) !important;}
+  .leaflet-popup-content-wrapper{border-radius:12px !important;}
+  .cargando-mapa{
+    position:absolute; inset:0; z-index:410; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:12px; background:var(--crema); color:var(--texto-suave);
+    font-size:14px; font-weight:600; transition:opacity .3s ease;
+  }
+  .cargando-mapa .aro{
+    width:34px; height:34px; border-radius:50%; border:3px solid var(--linea);
+    border-top-color:var(--verde-cancha); animation:girar 0.9s linear infinite;
+  }
+  @keyframes girar{ to{ transform:rotate(360deg); } }
 
   /* ---------- CLUBES ---------- */
   .grid-clubes{display:grid; grid-template-columns:repeat(2,1fr); gap:26px;}
@@ -481,13 +504,16 @@
       </p>
     </div>
     <div class="mapa-envoltorio">
+      <div id="cargando-mapa" class="cargando-mapa"><span class="aro"></span>Cargando mapa interactivo…</div>
       <div id="mapa-leaflet"></div>
+      <div id="aviso-scroll" class="aviso-scroll">Haz clic sobre el mapa para activar el zoom con scroll</div>
       <div class="leyenda-mapa">
         <div class="leyenda-item"><span class="punto" style="background:#003B95;"></span> Club afiliado</div>
         <div class="leyenda-item"><span class="punto" style="background:#1F6F43;"></span> Cancha deportiva</div>
         <div class="leyenda-item"><span class="punto" style="background:#F4762D;"></span> Campo de béisbol</div>
         <div class="leyenda-item"><span class="punto" style="background:#3FA66B;"></span> Parque</div>
         <div class="leyenda-item"><span class="punto" style="background:#C49A22;"></span> Plaza</div>
+        <div class="contador-espacios" id="contador-espacios"></div>
       </div>
     </div>
   </div>
@@ -672,7 +698,39 @@
   };
 
   // ---------- Mapa base ----------
-  const mapa = L.map('mapa-leaflet', { scrollWheelZoom:false }).setView([10.155, -67.905], 13);
+  const mapa = L.map('mapa-leaflet', { scrollWheelZoom:false, zoomControl:true }).setView([10.155, -67.905], 13);
+
+  // Quita el spinner de carga en cuanto el mapa termina de dibujarse
+  mapa.whenReady(() => {
+    setTimeout(() => {
+      const cargando = document.getElementById('cargando-mapa');
+      if(cargando){ cargando.style.opacity = '0'; setTimeout(() => cargando.remove(), 300); }
+      mapa.invalidateSize();
+    }, 250);
+  });
+
+  // Evita que el scroll de la página quede "atrapado" por el mapa:
+  // el zoom con scroll solo se activa al hacer clic dentro del mapa.
+  const avisoScroll = document.getElementById('aviso-scroll');
+  let avisoTimeout;
+  mapa.on('click', () => {
+    mapa.scrollWheelZoom.enable();
+    avisoScroll.classList.remove('visible');
+  });
+  mapa.getContainer().addEventListener('mouseenter', () => {
+    if(!mapa.scrollWheelZoom.enabled()){
+      avisoScroll.classList.add('visible');
+      clearTimeout(avisoTimeout);
+      avisoTimeout = setTimeout(() => avisoScroll.classList.remove('visible'), 1800);
+    }
+  });
+  mapa.getContainer().addEventListener('mouseleave', () => {
+    mapa.scrollWheelZoom.disable();
+    avisoScroll.classList.remove('visible');
+  });
+
+  // Vuelve a calcular el tamaño si la sección entra en pantalla más tarde (lazy layouts, pestañas, etc.)
+  window.addEventListener('load', () => mapa.invalidateSize());
 
   const capaNormal = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution:'&copy; OpenStreetMap',
@@ -716,6 +774,9 @@
 
   mapa.addLayer(grupoMarcadores);
 
+  const contador = document.getElementById('contador-espacios');
+  if(contador){ contador.textContent = `${espacios.length} espacios registrados`; }
+
   // ---------- Límites GeoJSON (estadal y parroquial) ----------
   const estiloEstadal = { color:"#003B95", weight:2, dashArray:"6 4", fillOpacity:0.02 };
   const estiloParroquial = { color:"#C49A22", weight:1.4, dashArray:"2 4", fillOpacity:0.02 };
@@ -746,6 +807,7 @@
   function irAlMapa(lat, lng){
     document.getElementById('mapa').scrollIntoView({ behavior:'smooth', block:'start' });
     setTimeout(() => {
+      mapa.invalidateSize();
       mapa.setView([lat, lng], 17);
       const marcador = Object.values(window.marcadoresPorNombre).find(m => {
         const p = m.getLatLng();
