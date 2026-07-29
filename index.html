@@ -3,603 +3,635 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CODERE · Conexión Deportiva y Recreativa</title>
-<meta name="description" content="CODERE conecta clubes deportivos, parques y plazas en un solo mapa digital. Una iniciativa de la Secretaría de Deporte y Recreación de Concertación Ciudadana.">
+<title>CODERE | Conexión Deportiva y Recreativa — Concertación Ciudadana</title>
+<meta name="description" content="CODERE conecta clubes deportivos, parques y espacios recreativos en un solo mapa digital. Una iniciativa de la Secretaría de Deporte y Recreación de Concertación Ciudadana.">
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 
 <!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
   :root{
-    --verde-cancha:#1F6F43;
-    --verde-claro:#3FA66B;
-    --naranja-silbato:#F4762D;
-    --azul-concertacion:#003B95;
-    --dorado:#C49A22;
-    --crema:#F6F3E9;
-    --carbon:#132018;
-    --carbon-2:#1B2B21;
-    --linea:rgba(19,32,24,0.12);
-    --texto:#152018;
-    --texto-suave:#4B5A50;
-    --radio:14px;
-    --sombra:0 10px 30px rgba(19,32,24,0.14);
+    --navy:#001B3D;
+    --navy-2:#00204a;
+    --blue:#003B95;
+    --blue-light:#1C5FC7;
+    --gold:#C49A22;
+    --gold-light:#E4BB4A;
+    --paper:#F6F7FB;
+    --paper-2:#ECEFF6;
+    --ink:#0E1526;
+    --ink-soft:#4B5670;
+    --line:rgba(255,255,255,.14);
+    --line-dark:rgba(14,21,38,.10);
+    --radius:14px;
+    --shadow:0 10px 30px rgba(0,20,60,.14);
+    --maxw:1180px;
   }
-
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
   body{
     margin:0;
-    font-family:'Work Sans', sans-serif;
-    color:var(--texto);
-    background:var(--crema);
-    line-height:1.55;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Barlow',sans-serif;
+    -webkit-font-smoothing:antialiased;
   }
-  img{max-width:100%; display:block;}
-  a{color:inherit;}
-  .contenedor{max-width:1180px; margin:0 auto; padding:0 24px;}
-  h1,h2,h3{font-family:'Anton', sans-serif; font-weight:400; letter-spacing:0.5px; line-height:1.05; margin:0;}
-  .eyebrow{
-    font-family:'Space Mono', monospace;
+  img{max-width:100%;display:block;}
+  a{color:inherit;text-decoration:none;}
+  h1,h2,h3,h4{
+    font-family:'Oswald',sans-serif;
     text-transform:uppercase;
-    font-size:12.5px;
-    letter-spacing:2.5px;
-    color:var(--verde-cancha);
+    letter-spacing:.01em;
+    margin:0;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;}
+  .eyebrow{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    font-size:.78rem;
+    color:var(--gold);
+  }
+  section{padding:76px 0;}
+  .btn{
     display:inline-flex;
     align-items:center;
-    gap:10px;
-    margin-bottom:14px;
-  }
-  .eyebrow::before{
-    content:"";
-    width:22px; height:2px;
-    background:var(--naranja-silbato);
-    display:inline-block;
-  }
-  .boton{
-    font-family:'Work Sans', sans-serif;
+    gap:8px;
+    padding:13px 26px;
+    border-radius:999px;
+    font-family:'Barlow Condensed',sans-serif;
     font-weight:700;
-    font-size:15px;
-    padding:14px 26px;
-    border-radius:100px;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    font-size:.92rem;
     border:2px solid transparent;
     cursor:pointer;
-    display:inline-flex;
-    align-items:center;
-    gap:10px;
-    text-decoration:none;
     transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
   }
-  .boton:hover{transform:translateY(-2px);}
-  .boton-primario{background:var(--naranja-silbato); color:#fff; box-shadow:0 8px 22px rgba(244,118,45,0.35);}
-  .boton-primario:hover{box-shadow:0 12px 26px rgba(244,118,45,0.45);}
-  .boton-secundario{background:transparent; border-color:rgba(255,255,255,0.55); color:#fff;}
-  .boton-secundario:hover{background:rgba(255,255,255,0.12);}
-  .boton-oscuro{background:var(--carbon); color:#fff;}
-  .boton-oscuro:hover{background:#0c1610;}
-  .boton-outline{background:transparent; border-color:var(--verde-cancha); color:var(--verde-cancha);}
-  .boton-outline:hover{background:var(--verde-cancha); color:#fff;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-gold{background:var(--gold);color:var(--navy);}
+  .btn-gold:hover{background:var(--gold-light);box-shadow:0 8px 20px rgba(196,154,34,.35);}
+  .btn-outline{border-color:rgba(255,255,255,.55);color:#fff;}
+  .btn-outline:hover{background:rgba(255,255,255,.1);}
+  .btn-navy{background:var(--blue);color:#fff;}
+  .btn-navy:hover{background:var(--blue-light);}
 
-  /* ---------- NAV ---------- */
-  header.nav{
-    position:sticky; top:0; z-index:500;
-    background:rgba(19,32,24,0.94);
-    backdrop-filter:blur(6px);
-    border-bottom:1px solid rgba(255,255,255,0.08);
+  /* ===== Top strip ===== */
+  .topstrip{
+    background:var(--navy);
+    color:rgba(255,255,255,.75);
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:.85rem;
+    letter-spacing:.03em;
   }
-  .nav-inner{
-    max-width:1180px; margin:0 auto; padding:14px 24px;
-    display:flex; align-items:center; justify-content:space-between; gap:20px;
+  .topstrip .wrap{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:7px 24px;gap:12px;flex-wrap:wrap;
   }
-  .marca{display:flex; align-items:center; gap:12px; text-decoration:none;}
-  .marca img{height:34px; width:auto;}
-  .marca-texto{color:#fff;}
-  .marca-texto strong{font-family:'Anton', sans-serif; font-size:22px; letter-spacing:1px; display:block;}
-  .marca-texto span{font-family:'Space Mono', monospace; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--dorado);}
-  nav.enlaces{display:flex; gap:26px; align-items:center;}
-  nav.enlaces a{
-    color:rgba(255,255,255,0.82); text-decoration:none; font-size:14.5px; font-weight:600;
-    padding-bottom:4px; border-bottom:2px solid transparent; transition:.15s;
-  }
-  nav.enlaces a:hover{color:#fff; border-color:var(--naranja-silbato);}
-  .nav-cta{display:none;}
-  #menu-toggle{display:none;}
-  .icono-menu{display:none; background:none; border:none; color:#fff; font-size:26px; cursor:pointer;}
+  .topstrip .social{display:flex;gap:16px;align-items:center;}
+  .topstrip a:hover{color:var(--gold-light);}
 
-  @media (max-width:880px){
-    nav.enlaces{
-      position:absolute; top:100%; left:0; right:0;
-      background:var(--carbon); flex-direction:column; align-items:flex-start;
-      padding:10px 24px 20px; gap:16px;
-      display:none;
+  /* ===== Header ===== */
+  header{
+    position:sticky;top:0;z-index:500;
+    background:var(--blue);
+    box-shadow:0 2px 18px rgba(0,10,40,.25);
+  }
+  .nav{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:12px 24px;max-width:var(--maxw);margin:0 auto;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand img{height:42px;width:auto;}
+  .brand .name{color:#fff;line-height:1.05;}
+  .brand .name b{font-family:'Oswald';font-size:1.35rem;letter-spacing:.03em;}
+  .brand .name span{display:block;font-family:'Barlow Condensed';font-size:.68rem;letter-spacing:.12em;color:var(--gold-light);text-transform:uppercase;}
+  nav.links{display:flex;gap:26px;align-items:center;}
+  nav.links a{
+    color:rgba(255,255,255,.88);
+    font-family:'Barlow Condensed';
+    font-weight:600;
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    font-size:.92rem;
+  }
+  nav.links a:hover{color:var(--gold-light);}
+  .navbtn{display:none;background:none;border:none;color:#fff;font-size:1.6rem;cursor:pointer;}
+
+  @media(max-width:880px){
+    nav.links{
+      position:fixed;top:0;right:-100%;height:100vh;width:78%;max-width:320px;
+      background:var(--navy);flex-direction:column;justify-content:center;
+      transition:right .3s ease;gap:28px;
     }
-    #menu-toggle:checked ~ nav.enlaces{display:flex;}
-    .icono-menu{display:block;}
+    nav.links.open{right:0;}
+    .navbtn{display:block;}
   }
 
-  /* ---------- HERO ---------- */
+  /* ===== Hero ===== */
   .hero{
     position:relative;
     min-height:88vh;
-    display:flex; align-items:center;
+    display:flex;align-items:center;
     background:
-      linear-gradient(180deg, rgba(10,20,14,0.55) 0%, rgba(10,20,14,0.78) 55%, rgba(10,20,14,0.95) 100%),
-      url('https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/banner%20web%20deporte.jpg') center/cover no-repeat;
+      linear-gradient(180deg, rgba(0,20,55,.55) 0%, rgba(0,15,45,.72) 45%, var(--navy) 100%),
+      url('https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/banner%20web%20deporte.jpg?raw=true') center/cover no-repeat;
     color:#fff;
   }
-  .hero-contenido{max-width:720px; padding:110px 24px 70px;}
-  .hero h1{font-size:clamp(52px, 9vw, 96px); color:#fff;}
-  .hero h1 span{color:var(--naranja-silbato);}
-  .hero-sub{
-    font-family:'Space Mono', monospace; text-transform:uppercase; letter-spacing:3px;
-    font-size:13.5px; color:var(--dorado); margin-top:10px;
+  .hero .wrap{padding-top:70px;padding-bottom:60px;}
+  .hero .eyebrow{color:var(--gold-light);}
+  .hero h1{
+    font-size:clamp(2.4rem,6vw,4.4rem);
+    line-height:.98;
+    margin:14px 0 18px;
   }
-  .hero p.desc{font-size:18px; color:rgba(255,255,255,0.88); max-width:560px; margin:22px 0 34px;}
-  .hero-botones{display:flex; gap:16px; flex-wrap:wrap;}
+  .hero h1 em{font-style:normal;color:var(--gold-light);}
+  .hero p.lead{
+    max-width:640px;font-size:1.14rem;line-height:1.55;
+    color:rgba(255,255,255,.88);margin-bottom:32px;
+  }
+  .hero .ctas{display:flex;gap:16px;flex-wrap:wrap;}
 
-  .marcador{
-    display:flex; border-top:1px solid rgba(255,255,255,0.15);
-    background:var(--carbon);
+  /* ===== Scoreboard (signature element) ===== */
+  .scoreboard{
+    background:var(--navy);
+    border-top:1px solid var(--line);
+    border-bottom:4px solid var(--gold);
   }
-  .marcador .contenedor{display:flex; flex-wrap:wrap;}
-  .estadistica{
-    flex:1 1 180px; padding:26px 24px; text-align:left;
-    border-right:1px solid rgba(255,255,255,0.1);
+  .board-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);
+    gap:0;
   }
-  .estadistica:last-child{border-right:none;}
-  .estadistica b{
-    font-family:'Space Mono', monospace; font-size:34px; color:var(--verde-claro); display:block;
+  .board-tile{
+    padding:30px 18px;text-align:center;
+    border-right:1px solid var(--line);
+    position:relative;
+    background-image:radial-gradient(circle, rgba(255,255,255,.05) 1px, transparent 1.4px);
+    background-size:9px 9px;
   }
-  .estadistica span{color:rgba(255,255,255,0.65); font-size:13px; letter-spacing:0.5px;}
+  .board-tile:last-child{border-right:none;}
+  .board-num{
+    font-family:'Oswald';font-weight:700;
+    font-size:clamp(2rem,4.4vw,3.1rem);
+    color:var(--gold-light);
+    letter-spacing:.02em;
+    font-variant-numeric:tabular-nums;
+    text-shadow:0 0 18px rgba(228,187,74,.35);
+  }
+  .board-label{
+    margin-top:6px;
+    font-family:'Barlow Condensed';
+    font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+    font-size:.78rem;color:rgba(255,255,255,.65);
+  }
+  @media(max-width:700px){
+    .board-grid{grid-template-columns:repeat(2,1fr);}
+    .board-tile{border-bottom:1px solid var(--line);}
+  }
 
-  /* ---------- SECCIONES ---------- */
-  section{padding:88px 0;}
-  .titulo-seccion{max-width:640px; margin-bottom:48px;}
-  .titulo-seccion h2{font-size:clamp(32px,4vw,46px);}
-  .titulo-seccion p{color:var(--texto-suave); font-size:16.5px; margin-top:14px;}
+  /* ===== Section headers ===== */
+  .sec-head{max-width:640px;margin-bottom:40px;}
+  .sec-head h2{font-size:clamp(1.9rem,3.6vw,2.6rem);margin-top:8px;color:var(--navy);}
+  .sec-head p{color:var(--ink-soft);font-size:1.02rem;line-height:1.55;margin-top:12px;}
+  .sec-head.on-dark h2{color:#fff;}
+  .sec-head.on-dark p{color:rgba(255,255,255,.72);}
 
-  section.oscura{background:var(--carbon); color:#fff;}
-  section.oscura .titulo-seccion p{color:rgba(255,255,255,0.7);}
-  section.oscura .eyebrow{color:var(--verde-claro);}
+  /* ===== About ===== */
+  .about{
+    display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;
+  }
+  .about-copy h2{color:var(--navy);font-size:clamp(1.9rem,3.4vw,2.5rem);margin-bottom:16px;}
+  .about-copy p{color:var(--ink-soft);line-height:1.65;margin-bottom:14px;}
+  .about-media{
+    border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+    border:1px solid var(--line-dark);
+  }
+  @media(max-width:860px){.about{grid-template-columns:1fr;}}
 
-  /* ---------- NOTICIAS ---------- */
-  .grid-noticias{display:grid; grid-template-columns:repeat(2, 1fr); gap:28px;}
-  .tarjeta-noticia{
-    background:#fff; border-radius:var(--radio); overflow:hidden; box-shadow:var(--sombra);
-    display:flex; flex-direction:column;
+  /* ===== Noticias ===== */
+  .noticias{background:var(--paper-2);}
+  .news-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+  .news-card{
+    background:#fff;border-radius:var(--radius);overflow:hidden;
+    box-shadow:var(--shadow);border:1px solid var(--line-dark);
+    display:flex;flex-direction:column;
   }
-  .tarjeta-noticia .imagen{aspect-ratio:16/10; overflow:hidden; background:var(--verde-cancha);}
-  .tarjeta-noticia .imagen img{width:100%; height:100%; object-fit:cover;}
-  .tarjeta-noticia .cuerpo{padding:24px 26px 28px;}
-  .etiqueta-fecha{
-    font-family:'Space Mono', monospace; font-size:11.5px; letter-spacing:1.5px;
-    text-transform:uppercase; color:var(--naranja-silbato); font-weight:700;
+  .news-card .img-wrap{aspect-ratio:16/10;overflow:hidden;background:var(--navy);}
+  .news-card .img-wrap img{width:100%;height:100%;object-fit:cover;}
+  .news-body{padding:22px 24px 26px;}
+  .news-tag{
+    display:inline-block;background:var(--gold);color:var(--navy);
+    font-family:'Barlow Condensed';font-weight:700;letter-spacing:.06em;
+    text-transform:uppercase;font-size:.72rem;padding:4px 10px;border-radius:999px;
+    margin-bottom:12px;
   }
-  .tarjeta-noticia h3{font-size:23px; margin:10px 0 12px; font-family:'Work Sans'; font-weight:800; letter-spacing:0;}
-  .tarjeta-noticia p{color:var(--texto-suave); font-size:15px;}
+  .news-body h3{font-size:1.28rem;color:var(--navy);margin-bottom:10px;line-height:1.2;}
+  .news-body p{color:var(--ink-soft);font-size:.96rem;line-height:1.55;}
+  @media(max-width:800px){.news-grid{grid-template-columns:1fr;}}
 
-  /* ---------- DISCIPLINAS ---------- */
-  .grid-disciplinas{display:grid; grid-template-columns:repeat(2,1fr); gap:22px;}
-  .bloque-disciplina{
-    background:#fff; border:1px solid var(--linea); border-radius:var(--radio); padding:26px 26px 22px;
+  /* ===== Disciplinas ===== */
+  .disc-cats{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+  .disc-cat{
+    background:#fff;border-radius:var(--radius);padding:24px 22px;
+    border:1px solid var(--line-dark);box-shadow:var(--shadow);
   }
-  .bloque-disciplina .cabecera{display:flex; align-items:center; gap:12px; margin-bottom:16px;}
-  .num-disciplina{
-    font-family:'Space Mono', monospace; font-weight:700; font-size:13px;
-    background:var(--carbon); color:var(--verde-claro); width:34px; height:34px;
-    display:flex; align-items:center; justify-content:center; border-radius:50%;
+  .disc-cat h3{
+    font-size:1.02rem;color:var(--blue);margin-bottom:14px;
+    padding-bottom:12px;border-bottom:2px solid var(--paper-2);
   }
-  .bloque-disciplina h3{font-family:'Work Sans'; font-weight:800; font-size:18px;}
-  .chips{display:flex; flex-wrap:wrap; gap:9px;}
+  .chip-list{display:flex;flex-wrap:wrap;gap:8px;}
   .chip{
-    font-size:13.5px; font-weight:600; padding:8px 14px; border-radius:100px;
-    background:var(--crema); border:1px solid var(--linea); color:var(--texto);
+    font-family:'Barlow Condensed';font-weight:600;font-size:.86rem;
+    background:var(--paper-2);color:var(--ink);
+    padding:6px 12px;border-radius:8px;letter-spacing:.01em;
   }
-  .nota-disciplinas{
-    margin-top:26px; padding:18px 22px; border-left:4px solid var(--dorado);
-    background:#fff; border-radius:0 10px 10px 0; font-size:14.5px; color:var(--texto-suave);
+  @media(max-width:980px){.disc-cats{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.disc-cats{grid-template-columns:1fr;}}
+
+  /* ===== Mapa ===== */
+  .mapa{background:var(--navy);color:#fff;}
+  .map-toolbar{
+    display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px;align-items:center;justify-content:space-between;
+  }
+  .filter-chips{display:flex;gap:8px;flex-wrap:wrap;}
+  .filter-chip{
+    font-family:'Barlow Condensed';font-weight:700;letter-spacing:.03em;
+    text-transform:uppercase;font-size:.82rem;
+    padding:8px 16px;border-radius:999px;border:1.5px solid rgba(255,255,255,.3);
+    background:transparent;color:#fff;cursor:pointer;transition:all .15s ease;
+    display:flex;align-items:center;gap:7px;
+  }
+  .filter-chip .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+  .filter-chip.active{background:rgba(255,255,255,.14);border-color:var(--gold-light);}
+  .filter-chip:hover{border-color:var(--gold-light);}
+  #map{
+    height:560px;width:100%;border-radius:var(--radius);
+    border:2px solid rgba(255,255,255,.15);box-shadow:var(--shadow);
+  }
+  .map-legend{
+    margin-top:16px;display:flex;flex-wrap:wrap;gap:18px;
+    font-family:'Barlow Condensed';font-size:.86rem;color:rgba(255,255,255,.75);
+  }
+  .map-legend span{display:inline-flex;align-items:center;gap:7px;}
+  .map-legend .dot{width:10px;height:10px;border-radius:50%;}
+  .layer-toggles{display:flex;gap:14px;flex-wrap:wrap;font-family:'Barlow Condensed';font-size:.85rem;color:rgba(255,255,255,.75);margin-top:12px;}
+  .layer-toggles label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+
+  /* Leaflet popup theming */
+  .leaflet-popup-content-wrapper{border-radius:10px;}
+  .popup-card{font-family:'Barlow',sans-serif;min-width:190px;}
+  .popup-card .p-tag{
+    font-family:'Barlow Condensed';font-weight:700;letter-spacing:.06em;
+    text-transform:uppercase;font-size:.68rem;color:var(--blue);
+  }
+  .popup-card h4{font-family:'Oswald';font-size:1rem;margin:4px 0 6px;color:var(--ink);text-transform:none;}
+  .popup-card p{margin:0 0 8px;font-size:.85rem;color:var(--ink-soft);line-height:1.4;}
+  .popup-card a.wa-link{
+    display:inline-block;font-family:'Barlow Condensed';font-weight:700;
+    font-size:.8rem;color:#fff;background:#1EA952;padding:6px 12px;border-radius:999px;
   }
 
-  /* ---------- MAPA ---------- */
-  section.mapa-seccion{padding-bottom:60px;}
-  .mapa-envoltorio{
-    border-radius:var(--radio); overflow:hidden; box-shadow:var(--sombra); border:1px solid var(--linea);
+  /* ===== Clubes ===== */
+  .club-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .club-card{
+    background:#fff;border-radius:var(--radius);overflow:hidden;
+    border:1px solid var(--line-dark);box-shadow:var(--shadow);
+    display:flex;flex-direction:column;
   }
-  .mapa-envoltorio{position:relative;}
-  #mapa-leaflet{height:620px; width:100%; background:#dfe6df; z-index:1;}
-  @media (max-width:640px){ #mapa-leaflet{height:460px;} }
-  .aviso-scroll{
-    position:absolute; inset:0; z-index:400; display:flex; align-items:center; justify-content:center;
-    background:rgba(19,32,24,0.35); color:#fff; font-weight:700; font-size:15px; text-align:center;
-    padding:20px; opacity:0; pointer-events:none; transition:opacity .2s ease;
+  .club-logo{aspect-ratio:4/3;background:var(--paper-2);overflow:hidden;}
+  .club-logo img{width:100%;height:100%;object-fit:cover;}
+  .club-info{padding:20px 20px 22px;flex:1;display:flex;flex-direction:column;}
+  .club-info h3{font-size:1.12rem;color:var(--navy);margin-bottom:8px;line-height:1.2;}
+  .club-info p.tagline{color:var(--ink-soft);font-size:.92rem;line-height:1.5;margin-bottom:14px;flex:1;}
+  .club-meta{
+    font-family:'Barlow Condensed';font-size:.86rem;color:var(--ink-soft);
+    display:flex;flex-direction:column;gap:4px;margin-bottom:14px;
   }
-  .aviso-scroll.visible{opacity:1;}
-  .leyenda-mapa{
-    display:flex; flex-wrap:wrap; align-items:center; gap:18px; padding:16px 22px; background:#fff;
-    border-top:1px solid var(--linea); font-size:13.5px;
-  }
-  .leyenda-item{display:flex; align-items:center; gap:8px; color:var(--texto-suave); font-weight:600;}
-  .punto{width:12px; height:12px; border-radius:50%; display:inline-block; flex-shrink:0;}
-  .leyenda-mapa .contador-espacios{
-    margin-left:auto; font-family:'Space Mono', monospace; font-size:12.5px; color:var(--texto-suave);
-  }
-  .leaflet-control-layers{border-radius:10px !important; box-shadow:var(--sombra) !important;}
-  .leaflet-popup-content-wrapper{border-radius:12px !important;}
-  .cargando-mapa{
-    position:absolute; inset:0; z-index:410; display:flex; flex-direction:column; align-items:center;
-    justify-content:center; gap:12px; background:var(--crema); color:var(--texto-suave);
-    font-size:14px; font-weight:600; transition:opacity .3s ease;
-  }
-  .cargando-mapa .aro{
-    width:34px; height:34px; border-radius:50%; border:3px solid var(--linea);
-    border-top-color:var(--verde-cancha); animation:girar 0.9s linear infinite;
-  }
-  @keyframes girar{ to{ transform:rotate(360deg); } }
+  .club-meta b{color:var(--ink);}
+  .club-card .btn{width:100%;justify-content:center;}
+  @media(max-width:980px){.club-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:640px){.club-grid{grid-template-columns:1fr;}}
 
-  /* ---------- CLUBES ---------- */
-  .grid-clubes{display:grid; grid-template-columns:repeat(2,1fr); gap:26px;}
-  .ficha-club{
-    background:#fff; border-radius:var(--radio); box-shadow:var(--sombra); overflow:hidden;
-    display:flex; flex-direction:column; position:relative;
+  /* ===== CTA Registro ===== */
+  .cta-registro{
+    background:linear-gradient(120deg,var(--blue) 0%,var(--blue-light) 100%);
+    color:#fff;text-align:center;
   }
-  .ficha-club .cinta{
-    position:absolute; top:16px; left:-6px; background:var(--dorado); color:var(--carbon);
-    font-family:'Space Mono', monospace; font-size:11px; font-weight:700; letter-spacing:1px;
-    padding:5px 14px 5px 18px; text-transform:uppercase; border-radius:0 6px 6px 0;
-  }
-  .ficha-club .encabezado-club{
-    background:var(--azul-concertacion); padding:30px 26px 60px; position:relative; color:#fff;
-  }
-  .ficha-club .encabezado-club h3{font-family:'Work Sans'; font-weight:800; font-size:21px; margin-bottom:6px;}
-  .ficha-club .encabezado-club p{color:rgba(255,255,255,0.75); font-size:14px; margin:0;}
-  .logo-club{
-    width:82px; height:82px; border-radius:50%; background:#fff; padding:6px;
-    box-shadow:var(--sombra); position:absolute; bottom:-41px; left:26px; overflow:hidden;
-  }
-  .logo-club img{width:100%; height:100%; object-fit:cover; border-radius:50%;}
-  .cuerpo-club{padding:56px 26px 26px;}
-  .fila-dato{display:flex; gap:10px; align-items:flex-start; margin-bottom:12px; font-size:14.5px;}
-  .fila-dato b{font-weight:700; min-width:110px; color:var(--texto);}
-  .fila-dato span{color:var(--texto-suave);}
-  .acciones-club{display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;}
-  .acciones-club .boton{padding:10px 18px; font-size:13.5px;}
+  .cta-registro h2{font-size:clamp(1.8rem,4vw,2.6rem);margin-bottom:14px;}
+  .cta-registro p{max-width:560px;margin:0 auto 28px;color:rgba(255,255,255,.9);line-height:1.55;}
 
-  .ficha-club.placeholder{
-    align-items:center; justify-content:center; text-align:center; padding:50px 30px;
-    border:2px dashed var(--linea); box-shadow:none; background:var(--crema);
+  /* ===== Footer ===== */
+  footer{background:var(--navy);color:rgba(255,255,255,.7);padding-top:56px;}
+  .foot-grid{
+    display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:40px;
+    padding-bottom:36px;border-bottom:1px solid var(--line);
   }
-  .ficha-club.placeholder h3{font-family:'Work Sans'; font-weight:800; font-size:20px; margin-bottom:10px;}
-  .ficha-club.placeholder p{color:var(--texto-suave); font-size:14.5px; margin-bottom:20px;}
+  .foot-brand{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .foot-brand img{height:44px;}
+  .foot-brand b{font-family:'Oswald';color:#fff;font-size:1.2rem;}
+  footer h4{
+    font-family:'Barlow Condensed';color:var(--gold-light);
+    letter-spacing:.1em;font-size:.82rem;text-transform:uppercase;margin-bottom:14px;
+  }
+  footer ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;font-size:.94rem;}
+  footer a:hover{color:var(--gold-light);}
+  .foot-social{display:flex;gap:14px;margin-top:6px;}
+  .foot-social a{
+    width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.08);
+    display:flex;align-items:center;justify-content:center;transition:background .15s;
+  }
+  .foot-social a:hover{background:var(--gold);}
+  .foot-social img{width:20px;height:20px;}
+  .foot-bottom{
+    padding:20px 0 30px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+    font-size:.82rem;color:rgba(255,255,255,.5);font-family:'Barlow Condensed';letter-spacing:.02em;
+  }
+  @media(max-width:820px){.foot-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.foot-grid{grid-template-columns:1fr;}}
 
-  /* ---------- REGISTRO ---------- */
-  .panel-registro{
-    background:linear-gradient(135deg, var(--verde-cancha), #144d30);
-    border-radius:20px; padding:56px; color:#fff;
-    display:grid; grid-template-columns:1.3fr 1fr; gap:40px; align-items:center;
+  /* Floating WhatsApp */
+  .fab-wa{
+    position:fixed;right:22px;bottom:22px;z-index:600;
+    width:60px;height:60px;border-radius:50%;background:#1EA952;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 22px rgba(0,0,0,.35);
+    transition:transform .15s ease;
   }
-  .panel-registro h2{color:#fff; font-size:clamp(28px,3.6vw,40px);}
-  .panel-registro p{color:rgba(255,255,255,0.85); margin-top:14px; font-size:16px;}
-  .lista-requisitos{list-style:none; padding:0; margin:22px 0 0; display:flex; flex-direction:column; gap:10px;}
-  .lista-requisitos li{display:flex; gap:10px; font-size:14.5px; color:rgba(255,255,255,0.9);}
-  .lista-requisitos li::before{content:"✓"; color:var(--dorado); font-weight:700;}
-  .caja-cta{background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25); border-radius:16px; padding:30px; text-align:center;}
-  .caja-cta .boton{width:100%; justify-content:center;}
+  .fab-wa:hover{transform:scale(1.08);}
+  .fab-wa img{width:32px;height:32px;}
 
-  /* ---------- FOOTER ---------- */
-  footer{background:var(--carbon-2); color:rgba(255,255,255,0.82); padding:60px 0 0;}
-  .footer-grid{display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:40px; padding-bottom:40px;}
-  .footer-marca{display:flex; align-items:center; gap:12px; margin-bottom:14px;}
-  .footer-marca img{height:40px;}
-  .footer-marca strong{font-family:'Anton'; font-size:22px; color:#fff;}
-  footer h4{font-family:'Space Mono', monospace; font-size:12.5px; letter-spacing:2px; text-transform:uppercase; color:var(--dorado); margin-bottom:16px;}
-  footer p{font-size:14px; color:rgba(255,255,255,0.65); max-width:340px;}
-  .redes{display:flex; gap:12px; margin-top:16px;}
-  .redes a{
-    width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,0.08);
-    display:flex; align-items:center; justify-content:center; transition:.15s;
-  }
-  .redes a:hover{background:var(--naranja-silbato);}
-  .redes img{width:20px; height:20px;}
-  footer ul{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px;}
-  footer ul a{color:rgba(255,255,255,0.72); text-decoration:none; font-size:14.5px;}
-  footer ul a:hover{color:#fff;}
-  .footer-legal{
-    border-top:1px solid rgba(255,255,255,0.1); padding:20px 0; text-align:center;
-    font-size:13px; color:rgba(255,255,255,0.5);
-  }
-  .footer-legal strong{color:var(--dorado);}
-
-  .flotante-whatsapp{
-    position:fixed; bottom:24px; right:24px; z-index:600;
-    width:60px; height:60px; border-radius:50%; background:#25D366;
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 10px 26px rgba(0,0,0,0.3); text-decoration:none;
-  }
-  .flotante-whatsapp img{width:30px; height:30px;}
-
-  @media (max-width:900px){
-    .grid-noticias, .grid-disciplinas, .grid-clubes{grid-template-columns:1fr;}
-    .panel-registro{grid-template-columns:1fr;}
-    .footer-grid{grid-template-columns:1fr; gap:30px;}
-    .estadistica{flex:1 1 45%;}
-  }
-
-  .leaflet-popup-content{font-family:'Work Sans', sans-serif;}
-  .marcador-espacio{
-    border-radius:50%; border:2px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,0.35);
-  }
-  .marcador-club-icono{
-    width:38px; height:38px; border-radius:50%; background:var(--azul-concertacion);
-    border:3px solid var(--dorado); display:flex; align-items:center; justify-content:center;
-    box-shadow:0 4px 10px rgba(0,0,0,0.4); font-size:18px;
+  /* Reveal animation */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease, transform .6s ease;}
+  .reveal.in{opacity:1;transform:translateY(0);}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+    html{scroll-behavior:auto;}
   }
 </style>
 </head>
 <body>
 
-<!-- ===================== NAV ===================== -->
-<header class="nav">
-  <div class="nav-inner">
-    <a href="#inicio" class="marca">
-      <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/logo%20concertacion%20sin%20fondo.png" alt="Logo Concertación Ciudadana">
-      <div class="marca-texto">
-        <strong>CODERE</strong>
-        <span>Conexión Deportiva y Recreativa</span>
-      </div>
-    </a>
-    <input type="checkbox" id="menu-toggle">
-    <label for="menu-toggle" class="icono-menu">☰</label>
-    <nav class="enlaces">
-      <a href="#noticias">Noticias</a>
-      <a href="#disciplinas">Disciplinas</a>
-      <a href="#mapa">Mapa</a>
-      <a href="#clubes">Clubes</a>
-      <a href="#registro">Registro</a>
-      <a href="#contacto">Contacto</a>
-    </nav>
-  </div>
-</header>
-
-<!-- ===================== HERO ===================== -->
-<section class="hero" id="inicio">
-  <div class="hero-contenido">
-    <div class="hero-sub">Secretaría de Deporte y Recreación · Concertación Ciudadana</div>
-    <h1>CO<span>DE</span>RE</h1>
-    <p class="desc">
-      Una sola red para el deporte comunitario: registra tu club, ubica canchas, campos, parques y
-      plazas, y conecta con los espacios deportivos más cercanos de tu municipio.
-    </p>
-    <div class="hero-botones">
-      <a href="#registro" class="boton boton-primario">Registrar mi club</a>
-      <a href="#mapa" class="boton boton-secundario">Explorar el mapa</a>
+<!-- ===== Top strip ===== -->
+<div class="topstrip">
+  <div class="wrap">
+    <span>📞 Atención CODERE: 0424-4525765</span>
+    <div class="social">
+      <a href="https://whatsapp.com/channel/0029VbCN9F9Bqbr6yvRiYF3L" target="_blank" rel="noopener">Canal de WhatsApp</a>
+      <a href="https://www.instagram.com/concertacion.ve/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener" style="color:#E4BB4A;">Registrar mi club →</a>
     </div>
-  </div>
-</section>
-
-<div class="marcador">
-  <div class="contenedor">
-    <div class="estadistica"><b>18</b><span>disciplinas catalogadas</span></div>
-    <div class="estadistica"><b id="stat-espacios">–</b><span>espacios deportivos mapeados</span></div>
-    <div class="estadistica"><b>1</b><span>municipio activo · Los Guayos</span></div>
-    <div class="estadistica"><b>+</b><span>en expansión a todo Carabobo</span></div>
   </div>
 </div>
 
-<!-- ===================== NOTICIAS ===================== -->
-<section id="noticias">
-  <div class="contenedor">
-    <div class="titulo-seccion">
-      <div class="eyebrow">Noticias</div>
-      <h2>Lo último en la cancha</h2>
-      <p>Novedades del gremio deportivo y de los clubes que ya forman parte de la red CODERE.</p>
+<!-- ===== Header ===== -->
+<header>
+  <div class="nav">
+    <div class="brand">
+      <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/logo%20concertacion%20sin%20fondo.png?raw=true" alt="Logo Concertación Ciudadana">
+      <div class="name">
+        <b>CODERE</b>
+        <span>Conexión Deportiva y Recreativa</span>
+      </div>
     </div>
-    <div class="grid-noticias">
-      <article class="tarjeta-noticia">
-        <div class="imagen">
-          <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/banner%20web%20deporte.jpg" alt="Nace CODERE">
+    <nav class="links" id="navLinks">
+      <a href="#inicio" onclick="closeNav()">Inicio</a>
+      <a href="#noticias" onclick="closeNav()">Noticias</a>
+      <a href="#disciplinas" onclick="closeNav()">Disciplinas</a>
+      <a href="#mapa" onclick="closeNav()">Mapa</a>
+      <a href="#clubes" onclick="closeNav()">Clubes afiliados</a>
+      <a class="btn btn-gold" href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener">Registrarme</a>
+    </nav>
+    <button class="navbtn" id="navBtn" aria-label="Menú">☰</button>
+  </div>
+</header>
+
+<!-- ===== Hero ===== -->
+<section class="hero" id="inicio">
+  <div class="wrap">
+    <span class="eyebrow">Secretaría de Deporte y Recreación · Concertación Ciudadana</span>
+    <h1>Un solo mapa<br>para el <em>deporte</em><br>de nuestra gente</h1>
+    <p class="lead">CODERE conecta a los clubes deportivos, academias, parques y canchas en un directorio digital único: ubícalos en el mapa, conoce su ficha y contáctalos directamente por WhatsApp.</p>
+    <div class="ctas">
+      <a class="btn btn-gold" href="#mapa">Ver mapa interactivo</a>
+      <a class="btn btn-outline" href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener">Registrar mi club</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Scoreboard ===== -->
+<div class="scoreboard">
+  <div class="wrap board-grid">
+    <div class="board-tile">
+      <div class="board-num" data-count="6">0</div>
+      <div class="board-label">Clubes afiliados</div>
+    </div>
+    <div class="board-tile">
+      <div class="board-num" data-count="20">0</div>
+      <div class="board-label">Disciplinas registradas</div>
+    </div>
+    <div class="board-tile">
+      <div class="board-num" data-count="39">0</div>
+      <div class="board-label">Espacios en el mapa</div>
+    </div>
+    <div class="board-tile">
+      <div class="board-num" data-count="1">0</div>
+      <div class="board-label">Municipio piloto: Los Guayos</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Sobre CODERE ===== -->
+<section id="sobre">
+  <div class="wrap about reveal">
+    <div class="about-copy">
+      <span class="eyebrow">¿Qué es CODERE?</span>
+      <h2>Una alternativa gremial para el deporte comunitario</h2>
+      <p>CODERE (Conexión Deportiva y Recreativa) nace desde la Secretaría de Deporte y Recreación de Concertación Ciudadana como un registro gremial de clubes deportivos, pensado para organizar eventos y actividades, y para impulsar una fórmula de gestión de mantenimiento y sustentación de parques que permita recortar gasto presupuestario en los espacios públicos.</p>
+      <p>Aquí encontrarás el directorio de clubes afiliados, los parques y canchas de tu comunidad, y un mapa interactivo que iremos ampliando junto a los liderazgos focales en cada municipio.</p>
+      <a class="btn btn-navy" href="#clubes">Ver clubes afiliados</a>
+    </div>
+    <div class="about-media">
+      <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/imagenhomeconcertacion.png?raw=true" alt="Concertación Ciudadana">
+    </div>
+  </div>
+</section>
+
+<!-- ===== Noticias ===== -->
+<section class="noticias" id="noticias">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Al día</span>
+      <h2>Noticias CODERE</h2>
+      <p>Lo último del gremio deportivo y recreativo.</p>
+    </div>
+    <div class="news-grid reveal">
+      <article class="news-card">
+        <div class="img-wrap">
+          <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/banner%20web%20deporte.jpg?raw=true" alt="Nace CODERE">
         </div>
-        <div class="cuerpo">
-          <span class="etiqueta-fecha">Lanzamiento</span>
-          <h3>Nace CODERE, la alternativa gremial del deporte comunitario</h3>
-          <p>
-            CODERE llega como un espacio de registro para clubes deportivos, pensado para organizar
-            eventos y actividades, y para impulsar una fórmula de gestión que sustente el mantenimiento
-            de parques y canchas mientras reduce el gasto presupuestario de las comunidades.
-          </p>
+        <div class="news-body">
+          <span class="news-tag">Institucional</span>
+          <h3>Nace CODERE como alternativa gremial deportiva</h3>
+          <p>Arranca el registro de clubes deportivos para la organización de eventos y actividades, junto a una fórmula de gestión para el mantenimiento y sustentación de parques que permita recortar el gasto presupuestario en los espacios públicos.</p>
         </div>
       </article>
-      <article class="tarjeta-noticia">
-        <div class="imagen">
-          <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/Voleibol%20femenino.png" alt="Triunfo de voleibol en Los Guayos">
+      <article class="news-card">
+        <div class="img-wrap">
+          <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Voleibol%20femenino.png?raw=true" alt="Triunfo de voleibol Los Guayos">
         </div>
-        <div class="cuerpo">
-          <span class="etiqueta-fecha">Resultados</span>
-          <h3>Triunfo del voleibol en Los Guayos de la mano de Miguel Aristimuño</h3>
-          <p>
-            El Club Voleibol Los Cerritos, dirigido por Miguel Aristimuño, celebra una nueva victoria que
-            impulsa el crecimiento de la disciplina en el municipio y motiva a más equipos a sumarse
-            a la red CODERE.
-          </p>
+        <div class="news-body">
+          <span class="news-tag">Resultados</span>
+          <h3>Triunfo de voleibol femenino en Los Guayos con Miguel Aristimuño</h3>
+          <p>El voleibol femenino de Los Guayos celebra una nueva victoria bajo la conducción de Miguel Aristimuño, reflejo del talento que se forma día a día en las canchas de nuestros clubes afiliados.</p>
         </div>
       </article>
     </div>
   </div>
 </section>
 
-<!-- ===================== DISCIPLINAS ===================== -->
-<section id="disciplinas" style="background:#fff;">
-  <div class="contenedor">
-    <div class="titulo-seccion">
-      <div class="eyebrow">Disciplinas</div>
-      <h2>18 disciplinas, un solo registro</h2>
-      <p>Cada club indica su disciplina al registrarse. Esta lista crecerá a medida que nuevas
-      federaciones y academias se sumen a la red.</p>
+<!-- ===== Disciplinas ===== -->
+<section id="disciplinas">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Directorio</span>
+      <h2>Disciplinas deportivas</h2>
+      <p>Estas son las disciplinas que hoy conviven en CODERE. La lista crece con cada nuevo registro recibido por el formulario de afiliación.</p>
     </div>
-    <div class="grid-disciplinas">
-      <div class="bloque-disciplina">
-        <div class="cabecera"><span class="num-disciplina">01</span><h3>Deportes de conjunto</h3></div>
-        <div class="chips">
+    <div class="disc-cats reveal">
+      <div class="disc-cat">
+        <h3>Deportes de conjunto</h3>
+        <div class="chip-list">
           <span class="chip">Fútbol campo</span>
           <span class="chip">Futsal</span>
           <span class="chip">Baloncesto</span>
-          <span class="chip">Voleibol (cancha y playa)</span>
+          <span class="chip">Voleibol cancha</span>
+          <span class="chip">Voleibol playa</span>
           <span class="chip">Béisbol / Kickingball</span>
           <span class="chip">Softbol</span>
         </div>
       </div>
-      <div class="bloque-disciplina">
-        <div class="cabecera"><span class="num-disciplina">02</span><h3>Deportes de combate</h3></div>
-        <div class="chips">
+      <div class="disc-cat">
+        <h3>Deportes de combate</h3>
+        <div class="chip-list">
           <span class="chip">Boxeo</span>
           <span class="chip">Karate-do</span>
           <span class="chip">Taekwondo</span>
           <span class="chip">Judo</span>
           <span class="chip">Esgrima</span>
-          <span class="chip">Lucha olímpica / Lucha libre</span>
+          <span class="chip">Lucha olímpica</span>
         </div>
       </div>
-      <div class="bloque-disciplina">
-        <div class="cabecera"><span class="num-disciplina">03</span><h3>Fuerza y resistencia</h3></div>
-        <div class="chips">
+      <div class="disc-cat">
+        <h3>Fuerza y resistencia</h3>
+        <div class="chip-list">
           <span class="chip">Atletismo</span>
-          <span class="chip">Ciclismo (ruta, montaña, BMX)</span>
+          <span class="chip">Ciclismo ruta</span>
+          <span class="chip">Ciclismo montaña</span>
+          <span class="chip">BMX</span>
           <span class="chip">Halterofilia</span>
-          <span class="chip">Crossfit / Funcional</span>
+          <span class="chip">Crossfit / funcional</span>
           <span class="chip">Natación</span>
         </div>
       </div>
-      <div class="bloque-disciplina">
-        <div class="cabecera"><span class="num-disciplina">04</span><h3>Precisión y otros</h3></div>
-        <div class="chips">
+      <div class="disc-cat">
+        <h3>Precisión y otros</h3>
+        <div class="chip-list">
           <span class="chip">Tenis de mesa</span>
           <span class="chip">Tenis de campo</span>
           <span class="chip">Ajedrez</span>
-          <span class="chip">Gimnasia (artística / rítmica)</span>
+          <span class="chip">Gimnasia artística</span>
+          <span class="chip">Gimnasia rítmica</span>
         </div>
       </div>
     </div>
-    <div class="nota-disciplinas">
-      ¿Tu disciplina no está en la lista? Indícala en el formulario de registro y la incorporaremos
-      al catálogo general de CODERE.
-    </div>
   </div>
 </section>
 
-<!-- ===================== MAPA ===================== -->
-<section id="mapa" class="mapa-seccion">
-  <div class="contenedor">
-    <div class="titulo-seccion">
-      <div class="eyebrow">Mapa interactivo</div>
-      <h2>Todos los espacios, un solo mapa</h2>
-      <p>
-        Cambia entre vista normal y satelital, activa los límites estadal y parroquial, y toca cada
-        punto para ver su ficha. Iremos sumando canchas, campos, parques y plazas de todo Carabobo.
-      </p>
+<!-- ===== Mapa ===== -->
+<section class="mapa" id="mapa">
+  <div class="wrap">
+    <div class="sec-head on-dark reveal">
+      <span class="eyebrow">Mapa digital</span>
+      <h2>Clubes, parques y canchas cerca de ti</h2>
+      <p>Explora en vista normal o satelital. Filtra por tipo de espacio y toca cada punto para ver su ficha.</p>
     </div>
-    <div class="mapa-envoltorio">
-      <div id="cargando-mapa" class="cargando-mapa"><span class="aro"></span>Cargando mapa interactivo…</div>
-      <div id="mapa-leaflet"></div>
-      <div id="aviso-scroll" class="aviso-scroll">Haz clic sobre el mapa para activar el zoom con scroll</div>
-      <div class="leyenda-mapa">
-        <div class="leyenda-item"><span class="punto" style="background:#003B95;"></span> Club afiliado</div>
-        <div class="leyenda-item"><span class="punto" style="background:#1F6F43;"></span> Cancha deportiva</div>
-        <div class="leyenda-item"><span class="punto" style="background:#F4762D;"></span> Campo de béisbol</div>
-        <div class="leyenda-item"><span class="punto" style="background:#3FA66B;"></span> Parque</div>
-        <div class="leyenda-item"><span class="punto" style="background:#C49A22;"></span> Plaza</div>
-        <div class="contador-espacios" id="contador-espacios"></div>
+
+    <div class="map-toolbar reveal">
+      <div class="filter-chips" id="filterChips">
+        <button class="filter-chip active" data-type="club"><span class="dot" style="background:#E4453D"></span>Clubes</button>
+        <button class="filter-chip active" data-type="cancha"><span class="dot" style="background:#4C8DFF"></span>Canchas</button>
+        <button class="filter-chip active" data-type="campo"><span class="dot" style="background:#E4BB4A"></span>Campos de béisbol</button>
+        <button class="filter-chip active" data-type="parque"><span class="dot" style="background:#3FBF7F"></span>Parques</button>
+        <button class="filter-chip active" data-type="plaza"><span class="dot" style="background:#B983FF"></span>Plazas</button>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- ===================== CLUBES ===================== -->
-<section id="clubes" class="oscura">
-  <div class="contenedor">
-    <div class="titulo-seccion">
-      <div class="eyebrow">Clubes afiliados</div>
-      <h2>Fichas de club</h2>
-      <p>Información de contacto y ubicación de cada club registrado en CODERE.</p>
+    <div id="map" class="reveal"></div>
+
+    <div class="layer-toggles reveal">
+      <label><input type="checkbox" id="toggleStates"> Ver límites estadales</label>
+      <label><input type="checkbox" id="toggleParishes"> Ver límites parroquiales</label>
     </div>
-    <div class="grid-clubes">
-      <article class="ficha-club">
-        <span class="cinta">Afiliado CODERE</span>
-        <div class="encabezado-club">
-          <h3>Club Voleibol Los Cerritos</h3>
-          <p>Voleibol de cancha y playa</p>
-        </div>
-        <div class="logo-club">
-          <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/club%20voleibol%20los%20cerritos.png" alt="Logo Club Voleibol Los Cerritos">
-        </div>
-        <div class="cuerpo-club">
-          <div class="fila-dato"><b>Entrenador</b><span>Miguel Aristimuño</span></div>
-          <div class="fila-dato"><b>Ubicación</b><span>Cancha Múltiple Los Cerritos, Los Guayos, Carabobo</span></div>
-          <div class="fila-dato"><b>Teléfono</b><span>0412-414-6837</span></div>
-          <div class="acciones-club">
-            <a href="https://wa.me/584124146837" target="_blank" rel="noopener" class="boton boton-primario">Escribir por WhatsApp</a>
-            <button class="boton boton-outline" onclick="irAlMapa(10.169220554743173, -67.90890485794485)">Ver en el mapa</button>
-          </div>
-        </div>
-      </article>
-      <article class="ficha-club placeholder">
-        <h3>Tu club aquí</h3>
-        <p>Regístralo y aparece con ficha, logo y ubicación propia en el mapa de CODERE.</p>
-        <a href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener" class="boton boton-primario">Registrar mi club</a>
-      </article>
+
+    <div class="map-legend reveal">
+      <span><i class="dot" style="background:#E4453D"></i>Club afiliado</span>
+      <span><i class="dot" style="background:#4C8DFF"></i>Cancha deportiva</span>
+      <span><i class="dot" style="background:#E4BB4A"></i>Campo de béisbol</span>
+      <span><i class="dot" style="background:#3FBF7F"></i>Parque</span>
+      <span><i class="dot" style="background:#B983FF"></i>Plaza</span>
     </div>
   </div>
 </section>
 
-<!-- ===================== REGISTRO ===================== -->
-<section id="registro" style="background:#fff;">
-  <div class="contenedor">
-    <div class="panel-registro">
+<!-- ===== Clubes afiliados ===== -->
+<section id="clubes">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Ficha de afiliados</span>
+      <h2>Clubes afiliados a CODERE</h2>
+      <p>Conoce a los clubes registrados y contáctalos directamente por WhatsApp.</p>
+    </div>
+    <div class="club-grid reveal" id="clubGrid"></div>
+    <div style="text-align:center;margin-top:36px;">
+      <p style="color:var(--ink-soft);margin-bottom:16px;">¿Tienes un club deportivo y aún no apareces aquí?</p>
+      <a class="btn btn-navy" href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener">Registrar mi club en CODERE</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA Registro ===== -->
+<section class="cta-registro">
+  <div class="wrap reveal">
+    <span class="eyebrow" style="color:#fff;opacity:.85;">Únete al gremio</span>
+    <h2>Haz que tu club aparezca en el mapa de CODERE</h2>
+    <p>Completa el formulario de registro y tu club pasará a formar parte del directorio oficial de afiliados, visible para toda la comunidad.</p>
+    <a class="btn btn-gold" href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener">Ir al formulario de registro</a>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
       <div>
-        <div class="eyebrow" style="color:var(--dorado);">Únete a la red</div>
-        <h2>Registra tu club en CODERE</h2>
-        <p>
-          Completa el formulario con los datos de tu club para aparecer en la ficha de afiliados y en
-          el mapa interactivo. La Secretaría de Deporte y Recreación revisa cada registro antes de publicarlo.
-        </p>
-        <ul class="lista-requisitos">
-          <li>Nombre del club y disciplina</li>
-          <li>Nombre del entrenador o responsable</li>
-          <li>Ubicación de la cancha, campo o espacio</li>
-          <li>Teléfono o WhatsApp de contacto</li>
-          <li>Logo o foto del club (opcional)</li>
-        </ul>
-      </div>
-      <div class="caja-cta">
-        <p style="margin-bottom:18px; color:rgba(255,255,255,0.9);">Toma menos de 5 minutos.</p>
-        <a href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener" class="boton boton-oscuro">Ir al formulario de registro</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== FOOTER ===================== -->
-<footer id="contacto">
-  <div class="contenedor">
-    <div class="footer-grid">
-      <div>
-        <div class="footer-marca">
-          <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/imagenhomeconcertacion.png" alt="Concertación Ciudadana">
-          <strong>CODERE</strong>
+        <div class="foot-brand">
+          <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/logo%20concertacion%20sin%20fondo.png?raw=true" alt="Concertación Ciudadana">
+          <b>CODERE</b>
         </div>
-        <p>Iniciativa de la Secretaría de Deporte y Recreación de Concertación Ciudadana, para conectar
-        clubes deportivos, parques y plazas de Carabobo en un solo lugar.</p>
-        <div class="redes">
-          <a href="https://whatsapp.com/channel/0029VbCN9F9Bqbr6yvRiYF3L" target="_blank" rel="noopener" aria-label="Canal de WhatsApp">
-            <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/iconodewhatsapp.png" alt="WhatsApp">
+        <p style="max-width:280px;font-size:.92rem;line-height:1.6;">Conexión Deportiva y Recreativa es una iniciativa de la Secretaría de Deporte y Recreación de Concertación Ciudadana.</p>
+        <div class="foot-social">
+          <a href="https://whatsapp.com/channel/0029VbCN9F9Bqbr6yvRiYF3L" target="_blank" rel="noopener" aria-label="WhatsApp">
+            <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/iconodewhatsapp.png?raw=true" alt="WhatsApp">
           </a>
           <a href="https://www.instagram.com/concertacion.ve/" target="_blank" rel="noopener" aria-label="Instagram">
-            <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/iconoinstagram.png" alt="Instagram">
+            <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/iconoinstagram.png?raw=true" alt="Instagram">
           </a>
         </div>
       </div>
@@ -610,266 +642,310 @@
           <li><a href="#disciplinas">Disciplinas</a></li>
           <li><a href="#mapa">Mapa interactivo</a></li>
           <li><a href="#clubes">Clubes afiliados</a></li>
-          <li><a href="#registro">Registro</a></li>
         </ul>
       </div>
       <div>
         <h4>Contacto</h4>
         <ul>
-          <li>Los Guayos, Carabobo, Venezuela</li>
-          <li>Línea de atención: 0424-452-5765</li>
+          <li>📞 0424-4525765</li>
+          <li><a href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener">Formulario de registro</a></li>
           <li><a href="https://whatsapp.com/channel/0029VbCN9F9Bqbr6yvRiYF3L" target="_blank" rel="noopener">Canal de WhatsApp</a></li>
-          <li><a href="https://www.instagram.com/concertacion.ve/" target="_blank" rel="noopener">@concertacion.ve</a></li>
         </ul>
       </div>
     </div>
-    <div class="footer-legal">
-      CODERE · Conexión Deportiva y Recreativa — <strong>Secretaría de Deporte y Recreación</strong>, Concertación Ciudadana<br>
-      Diseño digital auspiciado por <strong>Nexus Marketing</strong>
+    <div class="foot-bottom">
+      <span>© 2026 CODERE · Concertación Ciudadana — Secretaría de Deporte y Recreación</span>
+      <span>Diseño digital auspiciado por Nexus Marketing</span>
     </div>
   </div>
 </footer>
 
-<a href="https://whatsapp.com/channel/0029VbCN9F9Bqbr6yvRiYF3L" target="_blank" rel="noopener" class="flotante-whatsapp" aria-label="Canal de WhatsApp">
-  <img src="https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/iconodewhatsapp.png" alt="WhatsApp">
+<a class="fab-wa" href="https://whatsapp.com/channel/0029VbCN9F9Bqbr6yvRiYF3L" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/iconodewhatsapp.png?raw=true" alt="WhatsApp">
 </a>
 
-<!-- ===================== SCRIPTS ===================== -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script>
-  // ---------- Datos de espacios deportivos ----------
-  // tipo: club | cancha | campo | parque | plaza
-  const espacios = [
-    {n:"Cancha Múltiple Los Cerritos", t:"club", lat:10.169220554743173, lng:-67.90890485794485,
-      desc:"Sede del Club Voleibol Los Cerritos, dirigido por Miguel Aristimuño."},
-    {n:"Parque Los Jabillos", t:"parque", lat:10.181166662109066, lng:-67.93110013787475},
-    {n:"Plaza Los Guayos", t:"plaza", lat:10.188656181222758, lng:-67.93723971473415},
-    {n:"Parque Las Aguitas, sector 3", t:"parque", lat:10.170841076483812, lng:-67.92983024922457},
-    {n:"Campo de Béisbol Infantil Omar Mirabal", t:"campo", lat:10.180981955466082, lng:-67.93610639888222},
-    {n:"Cancha deportiva, sector Alicia Piedri de Caldera", t:"cancha", lat:10.163323755754716, lng:-67.90372177270959},
-    {n:"Cancha deportiva, Alicia Piedri de Caldera – San Judas Tadeo", t:"cancha", lat:10.16929394101146, lng:-67.90025670700494},
-    {n:"Cancha deportiva, Alicia Piedri de Caldera – 15 de Los Guayos", t:"cancha", lat:10.17276831132751, lng:-67.89813549162469},
-    {n:"Cancha deportiva, urbanización Los Cerritos", t:"cancha", lat:10.168765569417815, lng:-67.91348957761987},
-    {n:"Campo de béisbol, urbanización Los Cerritos", t:"campo", lat:10.168598257228092, lng:-67.91100396154935},
-    {n:"Cancha deportiva, urbanización Los Cerritos (2)", t:"cancha", lat:10.169487586529, lng:-67.90845800309651},
-    {n:"Cancha deportiva L.N. Paraparal", t:"cancha", lat:10.169412883704162, lng:-67.90936636497496},
-    {n:"Cancha de básquet Paraparal", t:"cancha", lat:10.169455328108665, lng:-67.90891572296604},
-    {n:"Cancha deportiva, Buenaventura", t:"cancha", lat:10.174906505974153, lng:-67.9022374602051},
-    {n:"Cancha deportiva, 15 de Los Guayos – Buenaventura", t:"cancha", lat:10.174031708524229, lng:-67.89897296018756},
-    {n:"Cancha deportiva, Urb. Parque Residencial Roraima 1 y 2", t:"cancha", lat:10.174162137463265, lng:-67.90512008048132},
-    {n:"Cancha deportiva, 15 de Los Guayos (a)", t:"cancha", lat:10.177312574695568, lng:-67.89755427997969},
-    {n:"Cancha deportiva, 15 de Los Guayos (b)", t:"cancha", lat:10.176238119442793, lng:-67.8978851588277},
-    {n:"Cancha deportiva, 15 de Los Guayos (c)", t:"cancha", lat:10.17650101629557, lng:-67.89898376332366},
-    {n:"Cancha deportiva, 15 de Los Guayos (d)", t:"cancha", lat:10.180488030601222, lng:-67.89687596100559},
-    {n:"Cancha deportiva, 15 de Los Guayos (e)", t:"cancha", lat:10.18047637866594, lng:-67.89899788220481},
-    {n:"Cancha deportiva, sector Tacarigua V", t:"cancha", lat:10.178411894170944, lng:-67.91003345654144},
-    {n:"Parque Agua Dorada", t:"parque", lat:10.178422122216805, lng:-67.91566107802208},
-    {n:"Cancha deportiva, Ciudadela Tacarigua IV", t:"cancha", lat:10.182773538585424, lng:-67.90940604116601},
-    {n:"Cancha deportiva, Ciudadela Tacarigua II", t:"cancha", lat:10.187549009717236, lng:-67.91523813785804},
-    {n:"Cancha deportiva, acceso Bosque Real (a)", t:"cancha", lat:10.192253060475174, lng:-67.9080982398612},
-    {n:"Cancha deportiva, acceso Bosque Real (b)", t:"cancha", lat:10.191490637265264, lng:-67.90800700044474},
-    {n:"Cancha deportiva, acceso Bosque Real (c)", t:"cancha", lat:10.192250527525243, lng:-67.90808136313795},
-    {n:"Cancha deportiva, acceso Bosque Real (d)", t:"cancha", lat:10.193236490175648, lng:-67.90760593763035},
-    {n:"Cancha deportiva, acceso Bosque Real (e)", t:"cancha", lat:10.193950001301431, lng:-67.90764259303273},
-    {n:"Cancha deportiva, Brisa de Paraparal", t:"cancha", lat:10.190987634559626, lng:-67.91784544431188},
-    {n:"Cancha deportiva, Los Guayos (a)", t:"cancha", lat:10.182372483401647, lng:-67.9249518836312},
-    {n:"Cancha deportiva, Parque Midev", t:"cancha", lat:10.183478357021857, lng:-67.9250424358548},
-    {n:"Cancha deportiva, Los Guayos (b)", t:"cancha", lat:10.172686063957444, lng:-67.93049132685596},
-    {n:"Cancha deportiva, Los Guerra", t:"cancha", lat:10.173174471805412, lng:-67.92970543961995},
-    {n:"Cancha deportiva, Los Guayos (c)", t:"cancha", lat:10.173417576786179, lng:-67.9308238979573},
-    {n:"Cancha deportiva, Los Guayos (d)", t:"cancha", lat:10.173691911864294, lng:-67.92761622253973},
-    {n:"Cancha deportiva, Vivienda Popular Los Guayos II", t:"cancha", lat:10.175945977486498, lng:-67.93261330795102},
-    {n:"Cancha deportiva, Los Guayos (e)", t:"cancha", lat:10.175016588503672, lng:-67.93230023706313},
-    {n:"Cancha deportiva, Las Aguitas (a)", t:"cancha", lat:10.173579766247842, lng:-67.92494955228604},
-    {n:"Cancha deportiva, Las Aguitas (b)", t:"cancha", lat:10.171952179239115, lng:-67.92215334938332},
-    {n:"Cancha deportiva, Los Guayos (f)", t:"cancha", lat:10.16575328043825, lng:-67.91967096493708},
-    {n:"Cancha deportiva, Parque Camoruco", t:"cancha", lat:10.164268155182581, lng:-67.91785860617082},
-    {n:"Cancha de baloncesto El Polanco", t:"cancha", lat:10.169326840283869, lng:-67.92308150587247},
-    {n:"Campo deportivo Ángel María Campo", t:"campo", lat:10.169506662441893, lng:-67.92352583147581},
-    {n:"Cancha deportiva, Las Casitas", t:"cancha", lat:10.168099162841441, lng:-67.92360477258346},
-    {n:"Cancha deportiva, Las Aguitas (c)", t:"cancha", lat:10.162409436419328, lng:-67.92345536645763},
-    {n:"Cancha deportiva, Las Aguitas (d)", t:"cancha", lat:10.16420357217443, lng:-67.92493638914522},
-    {n:"Cancha deportiva, Las Aguitas (e)", t:"cancha", lat:10.16808331048844, lng:-67.92563318912285},
-    {n:"Cancha deportiva, Elda Rodríguez", t:"cancha", lat:10.166401301025031, lng:-67.92601820059306},
-    {n:"Cancha deportiva, sector 3 parte C Delia Chacón", t:"cancha", lat:10.17029897172893, lng:-67.9277675069216},
-    {n:"Cancha deportiva, 537F+42Q", t:"cancha", lat:10.162011080707456, lng:-67.9282389752617},
-    {n:"Cancha deportiva, Las Aguitas (f)", t:"cancha", lat:10.169568429256032, lng:-67.93125085583522},
-    {n:"Campo de entrenamiento Polar Metalgráfica", t:"campo", lat:10.16974144922551, lng:-67.93611406244472},
-    {n:"Campo de béisbol Papelón Escalona", t:"campo", lat:10.174138795967947, lng:-67.9382814706006},
-    {n:"Vivienda Popular Los Guayos II", t:"parque", lat:10.175041104779073, lng:-67.94159871124},
-    {n:"Cancha deportiva, sector 4 Vivienda Popular Los Guayos (a)", t:"cancha", lat:10.176387514683407, lng:-67.93759149097338},
-    {n:"Cancha deportiva, sector 4 Vivienda Popular Los Guayos (b)", t:"cancha", lat:10.177232317999287, lng:-67.93476980709106},
-    {n:"Cancha deportiva, sector 4 Vivienda Popular Los Guayos (c)", t:"cancha", lat:10.177529251169933, lng:-67.93389186966692},
-    {n:"Cancha deportiva, Barrio Las Garcilleras", t:"cancha", lat:10.181586691474319, lng:-67.93122560498125},
-    {n:"Campo de Béisbol Infantil Omar Mirabal (2)", t:"campo", lat:10.180890679439694, lng:-67.93647819116099},
-    {n:"Cancha de baloncesto, Los Guayos", t:"cancha", lat:10.180181854464761, lng:-67.94300542333525},
-    {n:"Cancha deportiva, José Ignacio Acevedo", t:"cancha", lat:10.180568271068305, lng:-67.94586498635974},
-    {n:"Campo de fútbol Invictos Los Guayos", t:"campo", lat:10.180906188229104, lng:-67.94504959483132},
-    {n:"Cancha de basquetbol, Plaza de Los Guayos", t:"cancha", lat:10.188609003614355, lng:-67.93793147057238},
-    {n:"Cancha deportiva, Barrio El Libertador", t:"cancha", lat:10.18691653567871, lng:-67.9333408930713},
-    {n:"Cancha deportiva Las Garcita", t:"cancha", lat:10.192130142522146, lng:-67.93245345482026},
-    {n:"Campo de béisbol Araguaney", t:"campo", lat:10.191693982031477, lng:-67.93680592606441},
-    {n:"Cancha deportiva, 53R6+GW8", t:"cancha", lat:10.191323263248103, lng:-67.93779156206686},
-    {n:"Campo de béisbol, Los Guayos (a)", t:"campo", lat:10.185714623343467, lng:-67.94850074551621},
-    {n:"Cancha de béisbol, Los Guayos", t:"campo", lat:10.18541493491481, lng:-67.94933752114359},
-    {n:"Campo de fútbol, Los Guayos", t:"campo", lat:10.185881116792716, lng:-67.94986529877384},
-    {n:"Campo de béisbol, Los Guayos (b)", t:"campo", lat:10.185086387272861, lng:-67.94977508038144},
-    {n:"Cancha deportiva, Los Guayos (g)", t:"cancha", lat:10.152740479687198, lng:-67.90849402386867},
-    {n:"Cancha deportiva, El Roble", t:"cancha", lat:10.156381080352064, lng:-67.90849531650869},
-    {n:"Cancha deportiva, Los Guayos (h)", t:"cancha", lat:10.157004636220604, lng:-67.91466632952985},
-    {n:"Cancha deportiva, Paraíso", t:"cancha", lat:10.160877719109113, lng:-67.91554623225929},
-    {n:"Cancha deportiva, sector Pirital", t:"cancha", lat:10.104885188368362, lng:-67.89466970660862},
-    {n:"Campo de béisbol Charal", t:"campo", lat:10.106540842298335, lng:-67.90622466311954},
-    {n:"Cancha deportiva, sector Charal", t:"cancha", lat:10.105962552660237, lng:-67.90579819190974},
-    {n:"Parque, sector Charal", t:"parque", lat:10.105878053631868, lng:-67.9061924766107},
-    {n:"Cancha deportiva, sector Cascabel", t:"cancha", lat:10.105843474902763, lng:-67.92221905642634},
-    {n:"Campo de béisbol Argimiro Gabardón, sector Cascabel", t:"campo", lat:10.106397999436178, lng:-67.92010279350839},
-    {n:"Campo de béisbol Alberto Martínez, sector La Ensenada", t:"campo", lat:10.1160914618883, lng:-67.919442970069},
-    {n:"Cancha deportiva, sector Cascabel 2", t:"cancha", lat:10.116510203129634, lng:-67.91919263453312},
-    {n:"Cancha deportiva, sector Samán Mocho", t:"cancha", lat:10.114965827867502, lng:-67.89260396345175},
-    {n:"Campo de béisbol, sector Samán Mocho", t:"campo", lat:10.14311782083038, lng:-67.90080079409171},
-    {n:"Cancha deportiva, sector Isla La Culebra", t:"cancha", lat:10.137178555110724, lng:-67.8769155690897}
-  ];
+/* ===================== Nav mobile ===================== */
+const navBtn = document.getElementById('navBtn');
+const navLinks = document.getElementById('navLinks');
+navBtn.addEventListener('click', ()=> navLinks.classList.toggle('open'));
+function closeNav(){ navLinks.classList.remove('open'); }
 
-  const colores = {
-    club:"#003B95",
-    cancha:"#1F6F43",
-    campo:"#F4762D",
-    parque:"#3FA66B",
-    plaza:"#C49A22"
-  };
-  const etiquetas = {
-    club:"Club afiliado",
-    cancha:"Cancha deportiva",
-    campo:"Campo de béisbol",
-    parque:"Parque",
-    plaza:"Plaza"
-  };
+/* ===================== Reveal on scroll ===================== */
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+},{threshold:.15});
+revealEls.forEach(el=>io.observe(el));
 
-  // ---------- Mapa base ----------
-  const mapa = L.map('mapa-leaflet', { scrollWheelZoom:false, zoomControl:true }).setView([10.155, -67.905], 13);
-
-  // Quita el spinner de carga en cuanto el mapa termina de dibujarse
-  mapa.whenReady(() => {
-    setTimeout(() => {
-      const cargando = document.getElementById('cargando-mapa');
-      if(cargando){ cargando.style.opacity = '0'; setTimeout(() => cargando.remove(), 300); }
-      mapa.invalidateSize();
-    }, 250);
-  });
-
-  // Evita que el scroll de la página quede "atrapado" por el mapa:
-  // el zoom con scroll solo se activa al hacer clic dentro del mapa.
-  const avisoScroll = document.getElementById('aviso-scroll');
-  let avisoTimeout;
-  mapa.on('click', () => {
-    mapa.scrollWheelZoom.enable();
-    avisoScroll.classList.remove('visible');
-  });
-  mapa.getContainer().addEventListener('mouseenter', () => {
-    if(!mapa.scrollWheelZoom.enabled()){
-      avisoScroll.classList.add('visible');
-      clearTimeout(avisoTimeout);
-      avisoTimeout = setTimeout(() => avisoScroll.classList.remove('visible'), 1800);
+/* ===================== Scoreboard count-up ===================== */
+const boardNums = document.querySelectorAll('.board-num');
+const boardIO = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const el = e.target;
+      const target = parseInt(el.dataset.count,10);
+      let cur = 0;
+      const step = Math.max(1, Math.round(target/40));
+      const t = setInterval(()=>{
+        cur += step;
+        if(cur >= target){ cur = target; clearInterval(t); }
+        el.textContent = cur;
+      }, 30);
+      boardIO.unobserve(el);
     }
   });
-  mapa.getContainer().addEventListener('mouseleave', () => {
-    mapa.scrollWheelZoom.disable();
-    avisoScroll.classList.remove('visible');
-  });
+},{threshold:.5});
+boardNums.forEach(el=>boardIO.observe(el));
 
-  // Vuelve a calcular el tamaño si la sección entra en pantalla más tarde (lazy layouts, pestañas, etc.)
-  window.addEventListener('load', () => mapa.invalidateSize());
-
-  const capaNormal = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution:'&copy; OpenStreetMap',
-    maxZoom:19
-  }).addTo(mapa);
-
-  const capaSatelital = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution:'Tiles &copy; Esri',
-    maxZoom:19
-  });
-
-  // ---------- Marcadores agrupados ----------
-  const grupoMarcadores = L.markerClusterGroup({ maxClusterRadius:44 });
-
-  window.marcadoresPorNombre = {};
-
-  espacios.forEach(e => {
-    let icono;
-    if(e.t === "club"){
-      icono = L.divIcon({
-        className:'',
-        html:`<div class="marcador-club-icono">🏆</div>`,
-        iconSize:[38,38], iconAnchor:[19,19]
-      });
-    } else {
-      icono = L.divIcon({
-        className:'',
-        html:`<div class="marcador-espacio" style="width:18px;height:18px;background:${colores[e.t]};"></div>`,
-        iconSize:[18,18], iconAnchor:[9,9]
-      });
-    }
-    const marcador = L.marker([e.lat, e.lng], { icon:icono });
-    marcador.bindPopup(`
-      <strong>${e.n}</strong><br>
-      <span style="color:${colores[e.t]}; font-weight:700; font-size:12px; text-transform:uppercase;">${etiquetas[e.t]}</span>
-      ${e.desc ? `<p style="margin:8px 0 0; font-size:13px;">${e.desc}</p>` : ""}
-    `);
-    grupoMarcadores.addLayer(marcador);
-    window.marcadoresPorNombre[e.n] = marcador;
-  });
-
-  mapa.addLayer(grupoMarcadores);
-
-  const contador = document.getElementById('contador-espacios');
-  if(contador){ contador.textContent = `${espacios.length} espacios registrados`; }
-  const statEspacios = document.getElementById('stat-espacios');
-  if(statEspacios){ statEspacios.textContent = espacios.length; }
-
-  // ---------- Límites GeoJSON (estadal y parroquial) ----------
-  const estiloEstadal = { color:"#003B95", weight:2, dashArray:"6 4", fillOpacity:0.02 };
-  const estiloParroquial = { color:"#C49A22", weight:1.4, dashArray:"2 4", fillOpacity:0.02 };
-
-  const capaEstadal = L.layerGroup();
-  const capaParroquial = L.layerGroup();
-
-  fetch('https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/geoBoundaries-VEN-ADM1_simplified.geojson')
-    .then(r => r.json())
-    .then(data => L.geoJSON(data, { style:estiloEstadal }).addTo(capaEstadal))
-    .catch(() => console.warn('No se pudo cargar el límite estadal.'));
-
-  fetch('https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/geoBoundaries-VEN-ADM2_simplified.geojson')
-    .then(r => r.json())
-    .then(data => L.geoJSON(data, { style:estiloParroquial }).addTo(capaParroquial))
-    .catch(() => console.warn('No se pudo cargar el límite parroquial.'));
-
-  // ---------- Control de capas ----------
-  L.control.layers(
-    { "Mapa": capaNormal, "Satélite": capaSatelital },
-    { "Límite estadal": capaEstadal, "Límite parroquial": capaParroquial, "Espacios deportivos": grupoMarcadores },
-    { collapsed:true, position:'topright' }
-  ).addTo(mapa);
-
-  L.control.scale({ metric:true, imperial:false }).addTo(mapa);
-
-  // ---------- Ir al mapa desde una ficha de club ----------
-  function irAlMapa(lat, lng){
-    document.getElementById('mapa').scrollIntoView({ behavior:'smooth', block:'start' });
-    setTimeout(() => {
-      mapa.invalidateSize();
-      mapa.setView([lat, lng], 17);
-      const marcador = Object.values(window.marcadoresPorNombre).find(m => {
-        const p = m.getLatLng();
-        return Math.abs(p.lat - lat) < 0.0001 && Math.abs(p.lng - lng) < 0.0001;
-      });
-      if(marcador){
-        grupoMarcadores.zoomToShowLayer(marcador, () => marcador.openPopup());
-      }
-    }, 500);
+/* ===================== Clubes afiliados (data) ===================== */
+const clubs = [
+  {
+    id:'club-cerritos',
+    nombre:'Club Voleibol Los Cerritos',
+    tagline:'Desarrollando talento en las comunidades y rescatando talento de alto nivel.',
+    telefono:'04124146837',
+    ubicacion:'Carabobo, Los Guayos',
+    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/club%20voleibol%20los%20cerritos.png?raw=true',
+    lat:10.16922, lng:-67.90890
+  },
+  {
+    id:'club-americas',
+    nombre:'Academia de Voleibol Las Américas',
+    tagline:'Formación de atletas con desarrollo físico, cognitivo, afectivo y mental para un desenvolvimiento de alto nivel en cancha.',
+    telefono:'04244190350',
+    ubicacion:'Barrio América, calle Arvelo entre Av. Díaz Moreno y Montes de Oca, sector La Barraca, Valencia',
+    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Academia%20de%20Voleibol%20las%20Americas.jpeg?raw=true',
+    lat:10.1745, lng:-67.9975
+  },
+  {
+    id:'club-brf',
+    nombre:'Club Deportivo BRF (Bucares Real Fútbol)',
+    tagline:'Escuela formativa y federada: preparación desde base hasta niveles superiores, con participación en torneos municipales, estadales y de desarrollo.',
+    telefono:'04145971390',
+    ubicacion:'Flor Amarillo, Urb. Los Bucares, frente al módulo policial, Valencia, Carabobo',
+    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Club%20Deportivo%20BRF.jpeg?raw=true',
+    lat:10.1552, lng:-68.0058
+  },
+  {
+    id:'club-sanagustin',
+    nombre:'San Agustín Voleibol Club',
+    tagline:'Enseñamos a niños y niñas de 6 a 20 años la práctica del voleibol junto al respeto y la educación hacia compañeros, entrenadores y padres. Sin excepciones: todos son bienvenidos.',
+    telefono:'04146596664',
+    ubicacion:'Barrio San Agustín, Av. Las Ferias, frente a la estación de metro Las Ferias, Valencia, Carabobo',
+    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/San%20Agustin%20Voleibol%20Club.jpeg?raw=true',
+    lat:10.1678, lng:-68.0018
+  },
+  {
+    id:'club-united',
+    nombre:'United Voleibol Club',
+    tagline:'Academia dedicada a la formación y desarrollo de atletas de alto rendimiento, con proyección a la selección estadal y nacional.',
+    telefono:'04128461881',
+    ubicacion:'Av. Principal, sector La Bocaina 2, Valencia, Carabobo',
+    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/United%20Voleibol%20Club.jpeg?raw=true',
+    lat:10.1402, lng:-67.9948
+  },
+  {
+    id:'club-alianza',
+    nombre:'Alianza Sport Academia',
+    tagline:'Formar atletas en la disciplina de voleibol para alto rendimiento.',
+    telefono:'04144088859',
+    ubicacion:'Cancha cubierta La Castrera, Urbanización La Castrera, Valencia, Carabobo',
+    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Alianza%20Sport.jpg?raw=true',
+    lat:10.1598, lng:-67.9852
   }
+];
+
+const clubGrid = document.getElementById('clubGrid');
+clubs.forEach(c=>{
+  const waNumber = '58' + c.telefono.replace(/^0/,'');
+  const card = document.createElement('article');
+  card.className = 'club-card';
+  card.id = c.id;
+  card.innerHTML = `
+    <div class="club-logo"><img src="${c.logo}" alt="${c.nombre}" loading="lazy"></div>
+    <div class="club-info">
+      <h3>${c.nombre}</h3>
+      <p class="tagline">${c.tagline}</p>
+      <div class="club-meta">
+        <span><b>📍</b> ${c.ubicacion}</span>
+        <span><b>📞</b> ${c.telefono}</span>
+      </div>
+      <a class="btn btn-navy" href="https://wa.me/${waNumber}" target="_blank" rel="noopener">Contactar por WhatsApp</a>
+    </div>`;
+  clubGrid.appendChild(card);
+});
+
+/* ===================== Espacios deportivos (canchas, campos, parques, plazas) ===================== */
+const espacios = [
+  {n:'Cancha múltiple Los Cerritos', t:'cancha', lat:10.169220554743173, lng:-67.90890485794485},
+  {n:'Parque Los Jabillos', t:'parque', lat:10.181166662109066, lng:-67.93110013787475},
+  {n:'Plaza Los Guayos', t:'plaza', lat:10.188656181222758, lng:-67.93723971473415},
+  {n:'Parque Las Aguitas sector 3', t:'parque', lat:10.170841076483812, lng:-67.92983024922457},
+  {n:'Campo de Béisbol Infantil Omar Mirabal', t:'campo', lat:10.180981955466082, lng:-67.93610639888222},
+  {n:'Cancha deportiva — Sector Alicia Piedri de Caldera', t:'cancha', lat:10.163323755754716, lng:-67.90372177270959},
+  {n:'Cancha deportiva — San Judas Tadeo', t:'cancha', lat:10.16929394101146, lng:-67.90025670700494},
+  {n:'Cancha deportiva — 15 de Los Guayos', t:'cancha', lat:10.17276831132751, lng:-67.89813549162469},
+  {n:'Cancha deportiva — Urb. Los Cerritos', t:'cancha', lat:10.168765569417815, lng:-67.91348957761987},
+  {n:'Campo de béisbol — Urb. Los Cerritos', t:'campo', lat:10.168598257228092, lng:-67.91100396154935},
+  {n:'Cancha deportiva — Urb. Los Cerritos', t:'cancha', lat:10.169487586529, lng:-67.90845800309651},
+  {n:'Cancha deportiva L.N. Paraparal', t:'cancha', lat:10.169412883704162, lng:-67.90936636497496},
+  {n:'Cancha de básquet Paraparal', t:'cancha', lat:10.169455328108665, lng:-67.90891572296604},
+  {n:'Cancha deportiva Buenaventura', t:'cancha', lat:10.174906505974153, lng:-67.9022374602051},
+  {n:'Cancha deportiva 15 Los Guayos — Buenaventura', t:'cancha', lat:10.174031708524229, lng:-67.89897296018756},
+  {n:'Cancha deportiva — Urb. Parque Residencial Roraima 1 y 2', t:'cancha', lat:10.174162137463265, lng:-67.90512008048132},
+  {n:'Cancha deportiva — 15 Los Guayos', t:'cancha', lat:10.177312574695568, lng:-67.89755427997969},
+  {n:'Cancha deportiva — 15 Los Guayos', t:'cancha', lat:10.176238119442793, lng:-67.8978851588277},
+  {n:'Cancha deportiva — 15 Los Guayos', t:'cancha', lat:10.17650101629557, lng:-67.89898376332366},
+  {n:'Cancha deportiva — 15 Los Guayos', t:'cancha', lat:10.180488030601222, lng:-67.89687596100559},
+  {n:'Cancha deportiva — 15 Los Guayos', t:'cancha', lat:10.18047637866594, lng:-67.89899788220481},
+  {n:'Cancha deportiva — Sector Tacarigua V', t:'cancha', lat:10.178411894170944, lng:-67.91003345654144},
+  {n:'Parque Agua Dorada', t:'parque', lat:10.178422122216805, lng:-67.91566107802208},
+  {n:'Cancha deportiva — Ciudadela Tacarigua IV', t:'cancha', lat:10.182773538585424, lng:-67.90940604116601},
+  {n:'Cancha deportiva — Ciudadela Tacarigua II', t:'cancha', lat:10.187549009717236, lng:-67.91523813785804},
+  {n:'Cancha deportiva — Acceso Bosque Real', t:'cancha', lat:10.192253060475174, lng:-67.9080982398612},
+  {n:'Cancha deportiva — Acceso Bosque Real', t:'cancha', lat:10.191490637265264, lng:-67.90800700044474},
+  {n:'Cancha deportiva — Municipio Los Guayos', t:'cancha', lat:10.09280064983812, lng:-67.90034899750009},
+  {n:'Cancha deportiva — Sector Pirital', t:'cancha', lat:10.104885188368362, lng:-67.89466970660862},
+  {n:'Campo de béisbol Charal', t:'campo', lat:10.106540842298335, lng:-67.90622466311954},
+  {n:'Cancha deportiva — Sector Charal', t:'cancha', lat:10.105962552660237, lng:-67.90579819190974},
+  {n:'Parque — Sector Charal', t:'parque', lat:10.105878053631868, lng:-67.9061924766107},
+  {n:'Cancha deportiva — Sector Cascabel', t:'cancha', lat:10.105843474902763, lng:-67.92221905642634},
+  {n:'Campo de béisbol Argimiro Gabardón — Sector Cascabel', t:'campo', lat:10.106397999436178, lng:-67.92010279350839},
+  {n:'Campo de béisbol Alberto Martínez — La Ensenada', t:'campo', lat:10.1160914618883, lng:-67.919442970069},
+  {n:'Cancha deportiva — Sector Cascabel 2', t:'cancha', lat:10.116510203129634, lng:-67.91919263453312},
+  {n:'Cancha deportiva — Sector Samán Mocho', t:'cancha', lat:10.114965827867502, lng:-67.89260396345175},
+  {n:'Campo de béisbol — Sector Samán Mocho', t:'campo', lat:10.14311782083038, lng:-67.90080079409171},
+  {n:'Cancha deportiva — Isla la Culebra', t:'cancha', lat:10.137178555110724, lng:-67.8769155690897}
+];
+
+/* ===================== Leaflet map ===================== */
+const typeColor = { club:'#E4453D', cancha:'#4C8DFF', campo:'#E4BB4A', parque:'#3FBF7F', plaza:'#B983FF' };
+const typeIconEmoji = { club:'🏅', cancha:'🏀', campo:'⚾', parque:'🌳', plaza:'🏛️' };
+
+function makeIcon(type, size){
+  size = size || 30;
+  return L.divIcon({
+    className:'',
+    html:`<div style="
+        width:${size}px;height:${size}px;border-radius:50% 50% 50% 0;
+        background:${typeColor[type]};transform:rotate(-45deg);
+        display:flex;align-items:center;justify-content:center;
+        box-shadow:0 2px 6px rgba(0,0,0,.4);border:2px solid #fff;">
+        <span style="transform:rotate(45deg);font-size:${size*0.5}px;">${typeIconEmoji[type]}</span>
+      </div>`,
+    iconSize:[size,size],
+    iconAnchor:[size/2,size]
+  });
+}
+
+const map = L.map('map', { scrollWheelZoom:false }).setView([10.155, -67.94], 12);
+
+const normalLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution:'&copy; OpenStreetMap contributors', maxZoom:19
+}).addTo(map);
+
+const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution:'Tiles &copy; Esri', maxZoom:19
+});
+
+L.control.layers({ 'Mapa normal': normalLayer, 'Vista satelital': satLayer }, null, { position:'topright' }).addTo(map);
+
+/* Layer groups by type for the filter chips */
+const layerGroups = {
+  club:L.layerGroup().addTo(map),
+  cancha:L.layerGroup().addTo(map),
+  campo:L.layerGroup().addTo(map),
+  parque:L.layerGroup().addTo(map),
+  plaza:L.layerGroup().addTo(map)
+};
+
+/* Club markers */
+clubs.forEach(c=>{
+  const waNumber = '58' + c.telefono.replace(/^0/,'');
+  const marker = L.marker([c.lat,c.lng], { icon: makeIcon('club',34) });
+  marker.bindPopup(`
+    <div class="popup-card">
+      <span class="p-tag">Club afiliado</span>
+      <h4>${c.nombre}</h4>
+      <p>${c.ubicacion}</p>
+      <a class="wa-link" href="https://wa.me/${waNumber}" target="_blank" rel="noopener">WhatsApp</a>
+      <div style="margin-top:8px;"><a href="#${c.id}" style="font-size:.8rem;color:#003B95;font-weight:600;">Ver ficha completa →</a></div>
+    </div>`);
+  layerGroups.club.addLayer(marker);
+});
+
+/* Facility markers */
+espacios.forEach(e=>{
+  const marker = L.marker([e.lat,e.lng], { icon: makeIcon(e.t,26) });
+  const labelByType = { cancha:'Cancha deportiva', campo:'Campo de béisbol', parque:'Parque', plaza:'Plaza' };
+  marker.bindPopup(`
+    <div class="popup-card">
+      <span class="p-tag">${labelByType[e.t]}</span>
+      <h4>${e.n}</h4>
+      <p>Municipio Los Guayos, Carabobo</p>
+    </div>`);
+  layerGroups[e.t].addLayer(marker);
+});
+
+/* Filter chips toggle */
+document.querySelectorAll('.filter-chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    const type = chip.dataset.type;
+    chip.classList.toggle('active');
+    if(chip.classList.contains('active')){
+      map.addLayer(layerGroups[type]);
+    } else {
+      map.removeLayer(layerGroups[type]);
+    }
+  });
+});
+
+/* Boundary GeoJSON — loaded on demand */
+let statesLayer, parishesLayer;
+const GEO_BASE = 'https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/';
+
+document.getElementById('toggleStates').addEventListener('change', async function(){
+  if(this.checked){
+    if(!statesLayer){
+      try{
+        const res = await fetch(GEO_BASE + 'geoBoundaries-VEN-ADM1_simplified.geojson');
+        const data = await res.json();
+        statesLayer = L.geoJSON(data, {
+          style: f => {
+            const name = (f.properties.shapeName || '').toLowerCase();
+            const isCarabobo = name.includes('carabobo');
+            return {
+              color: isCarabobo ? '#E4BB4A' : 'rgba(255,255,255,.35)',
+              weight: isCarabobo ? 3 : 1,
+              fillOpacity: isCarabobo ? 0.08 : 0
+            };
+          }
+        });
+      }catch(err){ console.error('No se pudo cargar el límite estadal', err); }
+    }
+    if(statesLayer) statesLayer.addTo(map);
+  } else if(statesLayer){
+    map.removeLayer(statesLayer);
+  }
+});
+
+document.getElementById('toggleParishes').addEventListener('change', async function(){
+  if(this.checked){
+    if(!parishesLayer){
+      try{
+        const res = await fetch(GEO_BASE + 'geoBoundaries-VEN-ADM2_simplified.geojson');
+        const data = await res.json();
+        parishesLayer = L.geoJSON(data, {
+          style: { color:'rgba(255,255,255,.25)', weight:1, fillOpacity:0 }
+        });
+      }catch(err){ console.error('No se pudo cargar el límite parroquial', err); }
+    }
+    if(parishesLayer) parishesLayer.addTo(map);
+  } else if(parishesLayer){
+    map.removeLayer(parishesLayer);
+  }
+});
 </script>
 </body>
 </html>
