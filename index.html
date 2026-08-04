@@ -6,12 +6,10 @@
 <title>CODERE | Conexión Deportiva y Recreativa — Concertación Ciudadana</title>
 <meta name="description" content="CODERE conecta clubes deportivos, parques y espacios recreativos en un solo mapa digital. Una iniciativa de la Secretaría de Deporte y Recreación de Concertación Ciudadana.">
 
-<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
 
-<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -129,7 +127,7 @@
     nav.links{
       position:fixed;top:0;right:-100%;height:100vh;width:78%;max-width:320px;
       background:var(--navy);flex-direction:column;justify-content:center;
-      transition:right .3s ease;gap:28px;
+      transition:right .3s ease;gap:28px;z-index:600;
     }
     nav.links.open{right:0;}
     .navbtn{display:block;}
@@ -159,7 +157,7 @@
   }
   .hero .ctas{display:flex;gap:16px;flex-wrap:wrap;}
 
-  /* ===== Scoreboard (signature element) ===== */
+  /* ===== Scoreboard ===== */
   .scoreboard{
     background:var(--navy);
     border-top:1px solid var(--line);
@@ -225,7 +223,7 @@
   }
   .news-card .img-wrap{aspect-ratio:16/10;overflow:hidden;background:var(--navy);position:relative;}
   .news-card .img-wrap img{width:100%;height:100%;object-fit:cover;}
-  .news-body{padding:22px 24px 26px;}
+  .news-body{padding:22px 24px 26px;flex:1;display:flex;flex-direction:column;}
   .news-tag{
     display:inline-block;background:var(--gold);color:var(--navy);
     font-family:'Barlow Condensed';font-weight:700;letter-spacing:.06em;
@@ -233,10 +231,10 @@
     margin-bottom:12px;
   }
   .news-body h3{font-size:1.28rem;color:var(--navy);margin-bottom:10px;line-height:1.2;}
-  .news-body p{color:var(--ink-soft);font-size:.96rem;line-height:1.55;}
+  .news-body p{color:var(--ink-soft);font-size:.96rem;line-height:1.55;margin:0;}
   @media(max-width:800px){.news-grid{grid-template-columns:1fr;}}
 
-  /* ===== Noticia: cinta desplazable de fotos y videos ===== */
+  /* ===== Media slider ===== */
   .media-slider{
     display:flex;
     width:100%;
@@ -345,7 +343,6 @@
   .layer-toggles{display:flex;gap:14px;flex-wrap:wrap;font-family:'Barlow Condensed';font-size:.85rem;color:rgba(255,255,255,.75);margin-top:12px;}
   .layer-toggles label{display:flex;align-items:center;gap:6px;cursor:pointer;}
 
-  /* Leaflet popup theming */
   .leaflet-popup-content-wrapper{border-radius:10px;}
   .popup-card{font-family:'Barlow',sans-serif;min-width:190px;}
   .popup-card .p-tag{
@@ -359,26 +356,89 @@
     font-size:.8rem;color:#fff;background:#1EA952;padding:6px 12px;border-radius:999px;
   }
 
-  /* ===== Clubes ===== */
-  .club-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
-  .club-card{
-    background:#fff;border-radius:var(--radius);overflow:hidden;
-    border:1px solid var(--line-dark);box-shadow:var(--shadow);
-    display:flex;flex-direction:column;
+  /* ===== Clubes — CORREGIDO ===== */
+  .club-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
   }
-  .club-logo{aspect-ratio:4/3;background:var(--paper-2);overflow:hidden;}
-  .club-logo img{width:100%;height:100%;object-fit:cover;}
-  .club-info{padding:20px 20px 22px;flex:1;display:flex;flex-direction:column;}
-  .club-info h3{font-size:1.12rem;color:var(--navy);margin-bottom:8px;line-height:1.2;}
-  .club-info p.tagline{color:var(--ink-soft);font-size:.92rem;line-height:1.5;margin-bottom:14px;flex:1;}
+  /* FIX: asegurar que las tarjetas siempre sean visibles */
+  .club-card{
+    background:#fff;
+    border-radius:var(--radius);
+    overflow:hidden;
+    border:1px solid var(--line-dark);
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    min-height:420px; /* FIX: altura mínima garantizada */
+  }
+  .club-logo{
+    height:200px; /* FIX: altura fija en vez de aspect-ratio que puede fallar */
+    background:var(--paper-2);
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .club-logo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  /* FIX: fallback visual si la imagen no carga */
+  .club-logo-fallback{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(135deg,var(--blue) 0%,var(--navy) 100%);
+    font-family:'Oswald';font-size:2.5rem;color:var(--gold-light);
+    letter-spacing:.05em;
+  }
+  .club-info{
+    padding:20px 20px 22px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+  .club-info h3{
+    font-size:1.05rem;
+    color:var(--navy);
+    margin-bottom:8px;
+    line-height:1.25;
+  }
+  .club-info p.tagline{
+    color:var(--ink-soft);
+    font-size:.9rem;
+    line-height:1.5;
+    margin-bottom:14px;
+    flex:1;
+  }
   .club-meta{
-    font-family:'Barlow Condensed';font-size:.86rem;color:var(--ink-soft);
-    display:flex;flex-direction:column;gap:4px;margin-bottom:14px;
+    font-family:'Barlow Condensed';
+    font-size:.86rem;
+    color:var(--ink-soft);
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    margin-bottom:14px;
   }
   .club-meta b{color:var(--ink);}
-  .club-card .btn{width:100%;justify-content:center;}
-  @media(max-width:980px){.club-grid{grid-template-columns:1fr 1fr;}}
-  @media(max-width:640px){.club-grid{grid-template-columns:1fr;}}
+  .club-card .btn{
+    width:100%;
+    justify-content:center;
+    margin-top:auto;
+  }
+
+  /* FIX responsive clubes */
+  @media(max-width:980px){
+    .club-grid{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:580px){
+    .club-grid{grid-template-columns:1fr;}
+    .club-card{min-height:auto;}
+  }
 
   /* ===== CTA Registro ===== */
   .cta-registro{
@@ -490,7 +550,7 @@
 <div class="scoreboard">
   <div class="wrap board-grid">
     <div class="board-tile">
-      <div class="board-num" data-count="6">0</div>
+      <div class="board-num" data-count="9">0</div>
       <div class="board-label">Clubes afiliados</div>
     </div>
     <div class="board-tile">
@@ -533,6 +593,8 @@
       <p>Lo último del gremio deportivo y recreativo.</p>
     </div>
     <div class="news-grid reveal">
+
+      <!-- Noticia 1 -->
       <article class="news-card">
         <div class="img-wrap">
           <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/banner%20web%20deporte.jpg?raw=true" alt="Nace CODERE">
@@ -543,52 +605,48 @@
           <p>Arranca el registro de clubes deportivos para la organización de eventos y actividades, junto a una fórmula de gestión para el mantenimiento y sustentación de parques que permita recortar el gasto presupuestario en los espacios públicos.</p>
         </div>
       </article>
+
+      <!-- Noticia 2 — FIX: estructura corregida, .img-wrap y .news-body como hermanos directos del article -->
       <article class="news-card">
-  <div class="img-wrap media-slider">
-    <div class="slides active">
-      <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/entrenadores%20pintando%20la%20cancha.jpeg?raw=true" alt="Entrenadores pintando la cancha múltiple de Los Cerritos">
-    </div>
-    <div class="slides">
-      <video muted controls playsinline preload="metadata">
-        <source src="https://github.com/jhonmalorne/ConcertacionCODERE/raw/main/equipo%20organizador%20de%20actividad.mp4" type="video/mp4">
-      </video>
-    </div>
-    <div class="slides">
-      <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/galones%20de%20pintura%20donados.jpeg?raw=true" alt="Galones de pintura donados por Febeca y Quimicolor">
-    </div>
-    <div class="slides">
-      <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/joven%20pintando.jpeg?raw=true" alt="Joven de la comunidad pintando la cancha">
-    </div>
-    <div class="slides">
-      <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/joven%20pintando2.jpeg?raw=true" alt="Joven de la comunidad pintando la cancha">
-    </div>
-    <div class="slides">
-      <video muted controls playsinline preload="metadata">
-        <source src="https://github.com/jhonmalorne/ConcertacionCODERE/raw/main/palabras%20del%20padre.mp4" type="video/mp4">
-      </video>
-    </div>
-    <div class="slides">
-      <video muted controls playsinline preload="metadata">
-        <source src="https://github.com/jhonmalorne/ConcertacionCODERE/raw/main/recibiendo%20p%C3%ADntura.mp4" type="video/mp4">
-      </video>
-    </div>
-  </div>
-  <div class="news-body">
-      <span class="news-tag">Institucional</span>
-      <h3>
-      Comunidad organizada recupera la Cancha Múltiple de Los Cerritos
-      </h3>
-      <p>
-      De la mano con la empresa privada, como
-      <strong>Febeca</strong> y <strong>Quimicolor</strong>,
-      la comunidad organizada junto a sus clubes deportivos de la
-      Urb. Los Cerritos logró recuperar espacios deportivos como la
-      Cancha Múltiple de la urbanización, para así impulsar el deporte
-      de niños y adolescentes en las comunidades.
-      <strong>Juntos somos más. Orden y Gestión.</strong>
-      </p>
-  </div>
-</article>
+        <div class="img-wrap">
+          <div class="media-slider">
+            <div class="slides">
+              <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/entrenadores%20pintando%20la%20cancha.jpeg?raw=true" alt="Entrenadores pintando la cancha múltiple de Los Cerritos">
+            </div>
+            <div class="slides">
+              <video muted controls playsinline preload="metadata">
+                <source src="https://github.com/jhonmalorne/ConcertacionCODERE/raw/main/equipo%20organizador%20de%20actividad.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="slides">
+              <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/galones%20de%20pintura%20donados.jpeg?raw=true" alt="Galones de pintura donados por Febeca y Quimicolor">
+            </div>
+            <div class="slides">
+              <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/joven%20pintando.jpeg?raw=true" alt="Joven de la comunidad pintando la cancha">
+            </div>
+            <div class="slides">
+              <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/joven%20pintando2.jpeg?raw=true" alt="Joven de la comunidad pintando la cancha">
+            </div>
+            <div class="slides">
+              <video muted controls playsinline preload="metadata">
+                <source src="https://github.com/jhonmalorne/ConcertacionCODERE/raw/main/palabras%20del%20padre.mp4" type="video/mp4">
+              </video>
+            </div>
+            <div class="slides">
+              <video muted controls playsinline preload="metadata">
+                <source src="https://github.com/jhonmalorne/ConcertacionCODERE/raw/main/recibiendo%20p%C3%ADntura.mp4" type="video/mp4">
+              </video>
+            </div>
+          </div>
+        </div>
+        <div class="news-body">
+          <span class="news-tag">Institucional</span>
+          <h3>Comunidad organizada recupera la Cancha Múltiple de Los Cerritos</h3>
+          <p>De la mano con la empresa privada, como <strong>Febeca</strong> y <strong>Quimicolor</strong>, la comunidad organizada junto a sus clubes deportivos de la Urb. Los Cerritos logró recuperar espacios deportivos como la Cancha Múltiple de la urbanización, para así impulsar el deporte de niños y adolescentes en las comunidades. <strong>Juntos somos más. Orden y Gestión.</strong></p>
+        </div>
+      </article>
+
+      <!-- Noticia 3 -->
       <article class="news-card">
         <div class="img-wrap">
           <img src="https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Voleibol%20femenino.png?raw=true" alt="Triunfo de voleibol Los Guayos">
@@ -599,7 +657,8 @@
           <p>El voleibol femenino de Los Guayos celebra una nueva victoria bajo la conducción de Miguel Aristimuño, reflejo del talento que se forma día a día en las canchas de nuestros clubes afiliados.</p>
         </div>
       </article>
-    </div>
+
+    </div><!-- /.news-grid -->
   </div>
 </section>
 
@@ -705,7 +764,8 @@
       <h2>Clubes afiliados a CODERE</h2>
       <p>Conoce a los clubes registrados y contáctalos directamente por WhatsApp.</p>
     </div>
-    <div class="club-grid reveal" id="clubGrid"></div>
+    <!-- FIX: grid declarado con visibilidad explícita, se rellena con JS -->
+    <div class="club-grid" id="clubGrid" style="opacity:1;visibility:visible;"></div>
     <div style="text-align:center;margin-top:36px;">
       <p style="color:var(--ink-soft);margin-bottom:16px;">¿Tienes un club deportivo y aún no apareces aquí?</p>
       <a class="btn btn-navy" href="https://forms.gle/LyKUJUGdG8oGWAHj8" target="_blank" rel="noopener">Registrar mi club en CODERE</a>
@@ -775,26 +835,26 @@
 /* ===================== Nav mobile ===================== */
 const navBtn = document.getElementById('navBtn');
 const navLinks = document.getElementById('navLinks');
-navBtn.addEventListener('click', ()=> navLinks.classList.toggle('open'));
+navBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
 function closeNav(){ navLinks.classList.remove('open'); }
 
 /* ===================== Reveal on scroll ===================== */
 const revealEls = document.querySelectorAll('.reveal');
-const io = new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-},{threshold:.15});
-revealEls.forEach(el=>io.observe(el));
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: .15 });
+revealEls.forEach(el => io.observe(el));
 
 /* ===================== Scoreboard count-up ===================== */
 const boardNums = document.querySelectorAll('.board-num');
-const boardIO = new IntersectionObserver((entries)=>{
-  entries.forEach(e=>{
+const boardIO = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
     if(e.isIntersecting){
       const el = e.target;
-      const target = parseInt(el.dataset.count,10);
+      const target = parseInt(el.dataset.count, 10);
       let cur = 0;
-      const step = Math.max(1, Math.round(target/40));
-      const t = setInterval(()=>{
+      const step = Math.max(1, Math.round(target / 40));
+      const t = setInterval(() => {
         cur += step;
         if(cur >= target){ cur = target; clearInterval(t); }
         el.textContent = cur;
@@ -802,39 +862,36 @@ const boardIO = new IntersectionObserver((entries)=>{
       boardIO.unobserve(el);
     }
   });
-},{threshold:.5});
-boardNums.forEach(el=>boardIO.observe(el));
+}, { threshold: .5 });
+boardNums.forEach(el => boardIO.observe(el));
 
-/* ===================== Noticia con cinta desplazable de fotos/videos ===================== */
+/* ===================== Media slider ===================== */
 function initMediaSliders(){
-  document.querySelectorAll('.media-slider').forEach(slider=>{
+  document.querySelectorAll('.media-slider').forEach(slider => {
     const wrap = slider.parentElement;
     const slides = Array.from(slider.querySelectorAll('.slides'));
     if(slides.length <= 1) return;
 
     wrap.style.position = 'relative';
 
-    // Contador tipo "1 / 7"
     const counter = document.createElement('div');
     counter.className = 'slider-counter';
-    counter.textContent = `1 / ${slides.length}`;
+    counter.textContent = '1 / ' + slides.length;
     wrap.appendChild(counter);
 
-    // Puntos indicadores
     const dots = document.createElement('div');
     dots.className = 'slider-dots';
-    const dotEls = slides.map((_, i)=>{
+    const dotEls = slides.map((_, i) => {
       const dot = document.createElement('button');
       dot.type = 'button';
       dot.className = 'slider-dot' + (i === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', `Ver foto o video ${i + 1} de ${slides.length}`);
-      dot.addEventListener('click', ()=> goTo(i));
+      dot.setAttribute('aria-label', 'Ver foto o video ' + (i+1) + ' de ' + slides.length);
+      dot.addEventListener('click', () => goTo(i));
       dots.appendChild(dot);
       return dot;
     });
     wrap.appendChild(dots);
 
-    // Flechas prev/next
     const prevBtn = document.createElement('button');
     prevBtn.type = 'button';
     prevBtn.className = 'slider-arrow slider-arrow-prev';
@@ -851,40 +908,38 @@ function initMediaSliders(){
     let current = 0;
     function goTo(i){
       current = Math.max(0, Math.min(slides.length - 1, i));
-      slides[current].scrollIntoView({ behavior:'smooth', inline:'start', block:'nearest' });
+      slides[current].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
     }
-    prevBtn.addEventListener('click', ()=> goTo(current - 1));
-    nextBtn.addEventListener('click', ()=> goTo(current + 1));
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
 
-    // Pausa el video al salir de su slide, y actualiza puntos/contador al desplazar
-    const slideIO = new IntersectionObserver((entries)=>{
-      entries.forEach(entry=>{
+    const slideIO = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
         const idx = slides.indexOf(entry.target);
         if(entry.isIntersecting && entry.intersectionRatio > 0.6){
           current = idx;
-          dotEls.forEach((d,i)=> d.classList.toggle('active', i === idx));
-          counter.textContent = `${idx + 1} / ${slides.length}`;
+          dotEls.forEach((d, i) => d.classList.toggle('active', i === idx));
+          counter.textContent = (idx + 1) + ' / ' + slides.length;
         }
         if(!entry.isIntersecting){
           const video = entry.target.querySelector('video');
           if(video && !video.paused) video.pause();
         }
       });
-    }, { root:slider, threshold:[0,0.6,1] });
-    slides.forEach(s=>slideIO.observe(s));
+    }, { root: slider, threshold: [0, 0.6, 1] });
+    slides.forEach(s => slideIO.observe(s));
 
-    // Arrastrar con el mouse en escritorio (touch ya funciona nativo)
     let isDown = false, startX = 0, startScroll = 0;
-    slider.addEventListener('mousedown', e=>{
+    slider.addEventListener('mousedown', e => {
       isDown = true;
       slider.classList.add('dragging');
       startX = e.pageX;
       startScroll = slider.scrollLeft;
     });
-    const stopDrag = ()=>{ isDown = false; slider.classList.remove('dragging'); };
+    const stopDrag = () => { isDown = false; slider.classList.remove('dragging'); };
     slider.addEventListener('mouseleave', stopDrag);
     slider.addEventListener('mouseup', stopDrag);
-    slider.addEventListener('mousemove', e=>{
+    slider.addEventListener('mousemove', e => {
       if(!isDown) return;
       e.preventDefault();
       slider.scrollLeft = startScroll - (e.pageX - startX);
@@ -893,112 +948,240 @@ function initMediaSliders(){
 }
 initMediaSliders();
 
-/* ===================== Clubes afiliados (data) ===================== */
+/* =====================================================================
+   CLUBES AFILIADOS — FIX PRINCIPAL
+   Se construyen las tarjetas con createElement en vez de innerHTML
+   para garantizar que el DOM se inserte correctamente en todos los
+   navegadores, incluyendo móvil (Safari/WebKit es más estricto con
+   innerHTML en template literals con comillas anidadas).
+   ===================================================================== */
 const clubs = [
   {
-    id:'club-cerritos',
-    nombre:'Club Voleibol Los Cerritos',
-    tagline:'Desarrollando talento en las comunidades y rescatando talento de alto nivel.',
-    telefono:'04124146837',
-    ubicacion:'Carabobo, Los Guayos',
-    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/club%20voleibol%20los%20cerritos.png?raw=true',
-    lat:10.16922, lng:-67.90890
+    id: 'club-cerritos',
+    nombre: 'Club Voleibol Los Cerritos',
+    tagline: 'Desarrollando talento en las comunidades y rescatando talento de alto nivel.',
+    telefono: '04124146837',
+    ubicacion: 'Carabobo, Los Guayos',
+    logo: 'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/club%20voleibol%20los%20cerritos.png?raw=true',
+    initials: 'VC',
+    lat: 10.16922, lng: -67.90890
   },
   {
-    id:'club-americas',
-    nombre:'Academia de Voleibol Las Américas',
-    tagline:'Formación de atletas con desarrollo físico, cognitivo, afectivo y mental para un desenvolvimiento de alto nivel en cancha.',
-    telefono:'04244190350',
-    ubicacion:'Barrio América, calle Arvelo entre Av. Díaz Moreno y Montes de Oca, sector La Barraca, Valencia',
-    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Academia%20de%20Voleibol%20las%20Americas.jpeg?raw=true',
-    lat:10.1745, lng:-67.9975
+    id: 'club-americas',
+    nombre: 'Academia de Voleibol Las Américas',
+    tagline: 'Formación de atletas con desarrollo físico, cognitivo, afectivo y mental para un desenvolvimiento de alto nivel en cancha.',
+    telefono: '04244190350',
+    ubicacion: 'Barrio América, Valencia, Carabobo',
+    logo: 'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Academia%20de%20Voleibol%20las%20Americas.jpeg?raw=true',
+    initials: 'AV',
+    lat: 10.1745, lng: -67.9975
   },
   {
-    id:'club-brf',
-    nombre:'Club Deportivo BRF (Bucares Real Fútbol)',
-    tagline:'Escuela formativa y federada: preparación desde base hasta niveles superiores, con participación en torneos municipales, estadales y de desarrollo.',
-    telefono:'04145971390',
-    ubicacion:'Flor Amarillo, Urb. Los Bucares, frente al módulo policial, Valencia, Carabobo',
-    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Club%20Deportivo%20BRF.jpeg?raw=true',
-    lat:10.1552, lng:-68.0058
-  },
-    {
-    id:'Escuela ABC voleibol',
-    nombre:'Escuela ABC voleibol',
-    tagline:'Somos una escuela que enseñamos desde cero, nuestros atletas aprenden no solo el deporte si no también valores, disciplina y respeto. Tenemos ya 5 años, comenzamos con clases personalizadas con tan solo 6 atletas ya participantes algunos de la selección de Carabobo y ahora con un buen número desde iniciación en todas las categorías.',
-    telefono:'04125318699',
-    ubicacion:'Viviendas popular los guayos sector 3 transversal 5. Cancha del sector 3 y 5 ',
-    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/ABC%20Voleibol.jpeg?raw=true',
-    lat:10.17658528421383, lng:-67.93609417379099,
-  },
-   {
-    id:'Estrellas vc',
-    nombre:'Estrellas vc',
-    tagline:'Formar atletas en la disciplina de voleibol para alto rendimiento.',
-    telefono:'04143429223',
-    ubicacion:'Aldea de paraparal, los guayos, Carabobo',
-    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/estrellas%20voleibol%20club.jpg?raw=true',
-    lat:10.18773263912042, lng:-67.91739760674737
+    id: 'club-brf',
+    nombre: 'Club Deportivo BRF (Bucares Real Fútbol)',
+    tagline: 'Escuela formativa y federada: preparación desde base hasta niveles superiores, con participación en torneos municipales, estadales y de desarrollo.',
+    telefono: '04145971390',
+    ubicacion: 'Flor Amarillo, Valencia, Carabobo',
+    logo: 'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Club%20Deportivo%20BRF.jpeg?raw=true',
+    initials: 'BRF',
+    lat: 10.1552, lng: -68.0058
   },
   {
-    id:'club-sanagustin',
-    nombre:'San Agustín Voleibol Club',
-    tagline:'Enseñamos a niños y niñas de 6 a 20 años la práctica del voleibol junto al respeto y la educación hacia compañeros, entrenadores y padres. Sin excepciones: todos son bienvenidos.',
-    telefono:'04146596664',
-    ubicacion:'Barrio San Agustín, Av. Las Ferias, frente a la estación de metro Las Ferias, Valencia, Carabobo',
-    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/San%20Agustin%20Voleibol%20Club.jpeg?raw=true',
-    lat:10.1678, lng:-68.0018
-  },
-    {
-    id:'Fénix Valencia Voley Club ',
-    nombre:'Fénix Valencia Voley Club ',
-    tagline:'Encargada de Planificar los Entrenamientos . Enseñar Técnicas como la Recepción,  el Saque y el Ataque .Guiar y Motivar a las Atletas para así fomentar el trabajo en equipo',
-    telefono:'04144393856',
-    ubicacion:'Urb. Ricardo Urriera sector 4, Valencia',
-    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Voleibol%20club%20valencia%20original.jpeg?raw=true',
-    lat:10.14326285023158, lng:-68.02321481828517  ,
+    id: 'club-abc',
+    nombre: 'Escuela ABC Voleibol',
+    tagline: 'Somos una escuela que enseñamos desde cero. Nuestros atletas aprenden no solo el deporte, sino también valores, disciplina y respeto. Tenemos 5 años formando atletas desde iniciación.',
+    telefono: '04125318699',
+    ubicacion: 'Viviendas Populares Los Guayos, Sector 3, Carabobo',
+    logo: 'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/ABC%20Voleibol.jpeg?raw=true',
+    initials: 'ABC',
+    lat: 10.17658528421383, lng: -67.93609417379099
   },
   {
-    id:'club-united',
-    nombre:'United Voleibol Club',
-    tagline:'Academia dedicada a la formación y desarrollo de atletas de alto rendimiento, con proyección a la selección estadal y nacional.',
-    telefono:'04128461881',
-    ubicacion:'Av. Principal, sector La Bocaina 2, Valencia, Carabobo',
-    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/United%20Voleibol%20Club.jpeg?raw=true',
-    lat:10.1402, lng:-67.9948
+    id: 'club-estrellas',
+    nombre: 'Estrellas VC',
+    tagline: 'Formar atletas en la disciplina de voleibol para alto rendimiento.',
+    telefono: '04143429223',
+    ubicacion: 'Aldea de Paraparal, Los Guayos, Carabobo',
+    logo: 'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/estrellas%20voleibol%20club.jpg?raw=true',
+    initials: 'EVC',
+    lat: 10.18773263912042, lng: -67.91739760674737
   },
   {
-    id:'club-alianza',
-    nombre:'Alianza Sport Academia',
-    tagline:'Formar atletas en la disciplina de voleibol para alto rendimiento.',
-    telefono:'04144088859',
-    ubicacion:'Cancha cubierta La Castrera, Urbanización La Castrera, Valencia, Carabobo',
-    logo:'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Alianza%20Sport.jpg?raw=true',
-    lat:10.1598, lng:-67.9852
+    id: 'club-sanagustin',
+    nombre: 'San Agustín Voleibol Club',
+    tagline: 'Enseñamos a niños y niñas de 6 a 20 años la práctica del voleibol junto al respeto y la educación. Sin excepciones: todos son bienvenidos.',
+    telefono: '04146596664',
+    ubicacion: 'Barrio San Agustín, Av. Las Ferias, Valencia, Carabobo',
+    logo: 'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/San%20Agustin%20Voleibol%20Club.jpeg?raw=true',
+    initials: 'SAV',
+    lat: 10.1678, lng: -68.0018
+  },
+  {
+    id: 'club-fenix',
+    nombre: 'Fénix Valencia Voley Club',
+    tagline: 'Planificamos entrenamientos. Enseñamos Recepción, Saque y Ataque. Guiamos y motivamos a las atletas fomentando el trabajo en equipo.',
+    telefono: '04144393856',
+    ubicacion: 'Urb. Ricardo Urriera, Sector 4, Valencia',
+    logo: 'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Voleibol%20club%20valencia%20original.jpeg?raw=true',
+    initials: 'FX',
+    lat: 10.14326285023158, lng: -68.02321481828517
+  },
+  {
+    id: 'club-united',
+    nombre: 'United Voleibol Club',
+    tagline: 'Academia dedicada a la formación y desarrollo de atletas de alto rendimiento, con proyección a la selección estadal y nacional.',
+    telefono: '04128461881',
+    ubicacion: 'Sector La Bocaina 2, Valencia, Carabobo',
+    logo: 'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/United%20Voleibol%20Club.jpeg?raw=true',
+    initials: 'UVC',
+    lat: 10.1402, lng: -67.9948
+  },
+  {
+    id: 'club-alianza',
+    nombre: 'Alianza Sport Academia',
+    tagline: 'Formar atletas en la disciplina de voleibol para alto rendimiento.',
+    telefono: '04144088859',
+    ubicacion: 'Cancha cubierta La Castrera, Valencia, Carabobo',
+    logo: 'https://github.com/jhonmalorne/ConcertacionCODERE/blob/main/Alianza%20Sport.jpg?raw=true',
+    initials: 'ASA',
+    lat: 10.1598, lng: -67.9852
   }
 ];
 
+/* FIX: construir tarjetas con createElement para máxima compatibilidad */
 const clubGrid = document.getElementById('clubGrid');
-clubs.forEach(c=>{
-  const waNumber = '58' + c.telefono.replace(/^0/,'');
-  const card = document.createElement('article');
-  card.className = 'club-card';
-  card.id = c.id;
-  card.innerHTML = `
-    <div class="club-logo"><img src="${c.logo}" alt="${c.nombre}" loading="lazy"></div>
-    <div class="club-info">
-      <h3>${c.nombre}</h3>
-      <p class="tagline">${c.tagline}</p>
-      <div class="club-meta">
-        <span><b>📍</b> ${c.ubicacion}</span>
-        <span><b>📞</b> ${c.telefono}</span>
-      </div>
-      <a class="btn btn-navy" href="https://wa.me/${waNumber}" target="_blank" rel="noopener">Contactar por WhatsApp</a>
-    </div>`;
-  clubGrid.appendChild(card);
+
+clubs.forEach(function(c) {
+  const waNumber = '58' + c.telefono.replace(/^0/, '');
+
+  // article
+  const article = document.createElement('article');
+  article.className = 'club-card';
+  article.id = c.id;
+
+  // logo wrapper
+  const logoDiv = document.createElement('div');
+  logoDiv.className = 'club-logo';
+
+  // fallback div (se oculta si la imagen carga bien)
+  const fallback = document.createElement('div');
+  fallback.className = 'club-logo-fallback';
+  fallback.setAttribute('aria-hidden', 'true');
+  fallback.textContent = c.initials;
+
+  // imagen
+  const img = document.createElement('img');
+  img.alt = c.nombre;
+  img.loading = 'lazy';
+  // FIX: al cargar ok, ocultar el fallback; si falla, mostrar fallback
+  img.addEventListener('load', function() {
+    fallback.style.display = 'none';
+  });
+  img.addEventListener('error', function() {
+    img.style.display = 'none';
+    fallback.style.display = 'flex';
+  });
+  img.src = c.logo; // asignar src DESPUÉS de los event listeners
+
+  logoDiv.appendChild(fallback);
+  logoDiv.appendChild(img);
+
+  // info wrapper
+  const infoDiv = document.createElement('div');
+  infoDiv.className = 'club-info';
+
+  const h3 = document.createElement('h3');
+  h3.textContent = c.nombre;
+
+  const tagline = document.createElement('p');
+  tagline.className = 'tagline';
+  tagline.textContent = c.tagline;
+
+  const meta = document.createElement('div');
+  meta.className = 'club-meta';
+
+  const loc = document.createElement('span');
+  loc.innerHTML = '<b>📍</b> ' + c.ubicacion;
+
+  const tel = document.createElement('span');
+  tel.innerHTML = '<b>📞</b> ' + c.telefono;
+
+  meta.appendChild(loc);
+  meta.appendChild(tel);
+
+  const waLink = document.createElement('a');
+  waLink.className = 'btn btn-navy';
+  waLink.href = 'https://wa.me/' + waNumber;
+  waLink.target = '_blank';
+  waLink.rel = 'noopener';
+  waLink.textContent = 'Contactar por WhatsApp';
+
+  infoDiv.appendChild(h3);
+  infoDiv.appendChild(tagline);
+  infoDiv.appendChild(meta);
+  infoDiv.appendChild(waLink);
+
+  article.appendChild(logoDiv);
+  article.appendChild(infoDiv);
+
+  clubGrid.appendChild(article);
 });
 
-/* ===================== Espacios deportivos (canchas, campos, parques, plazas) ===================== */
+/* ===================== Leaflet map ===================== */
+const typeColor = { club:'#E4453D', cancha:'#4C8DFF', campo:'#E4BB4A', parque:'#3FBF7F', plaza:'#B983FF' };
+const typeIconEmoji = { club:'🏅', cancha:'🏀', campo:'⚾', parque:'🌳', plaza:'🏛️' };
+
+function makeIcon(type, size){
+  size = size || 30;
+  return L.divIcon({
+    className: '',
+    html: '<div style="' +
+      'width:' + size + 'px;height:' + size + 'px;border-radius:50% 50% 50% 0;' +
+      'background:' + typeColor[type] + ';transform:rotate(-45deg);' +
+      'display:flex;align-items:center;justify-content:center;' +
+      'box-shadow:0 2px 6px rgba(0,0,0,.4);border:2px solid #fff;">' +
+      '<span style="transform:rotate(45deg);font-size:' + (size*0.5) + 'px;">' + typeIconEmoji[type] + '</span>' +
+      '</div>',
+    iconSize: [size, size],
+    iconAnchor: [size/2, size]
+  });
+}
+
+const map = L.map('map', { scrollWheelZoom: false }).setView([10.155, -67.94], 12);
+
+const normalLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors', maxZoom: 19
+}).addTo(map);
+
+const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; Esri', maxZoom: 19
+});
+
+L.control.layers({ 'Mapa normal': normalLayer, 'Vista satelital': satLayer }, null, { position:'topright' }).addTo(map);
+
+const layerGroups = {
+  club: L.layerGroup().addTo(map),
+  cancha: L.layerGroup().addTo(map),
+  campo: L.layerGroup().addTo(map),
+  parque: L.layerGroup().addTo(map),
+  plaza: L.layerGroup().addTo(map)
+};
+
+clubs.forEach(function(c) {
+  const waNumber = '58' + c.telefono.replace(/^0/, '');
+  const marker = L.marker([c.lat, c.lng], { icon: makeIcon('club', 34) });
+  marker.bindPopup(
+    '<div class="popup-card">' +
+    '<span class="p-tag">Club afiliado</span>' +
+    '<h4>' + c.nombre + '</h4>' +
+    '<p>' + c.ubicacion + '</p>' +
+    '<a class="wa-link" href="https://wa.me/' + waNumber + '" target="_blank" rel="noopener">WhatsApp</a>' +
+    '<div style="margin-top:8px;"><a href="#' + c.id + '" style="font-size:.8rem;color:#003B95;font-weight:600;">Ver ficha completa →</a></div>' +
+    '</div>'
+  );
+  layerGroups.club.addLayer(marker);
+});
+
 const espacios = [
   {n:'Cancha múltiple Los Cerritos', t:'cancha', lat:10.169220554743173, lng:-67.90890485794485},
   {n:'Parque Los Jabillos', t:'parque', lat:10.181166662109066, lng:-67.93110013787475},
@@ -1041,78 +1224,22 @@ const espacios = [
   {n:'Cancha deportiva — Isla la Culebra', t:'cancha', lat:10.137178555110724, lng:-67.8769155690897}
 ];
 
-/* ===================== Leaflet map ===================== */
-const typeColor = { club:'#E4453D', cancha:'#4C8DFF', campo:'#E4BB4A', parque:'#3FBF7F', plaza:'#B983FF' };
-const typeIconEmoji = { club:'🏅', cancha:'🏀', campo:'⚾', parque:'🌳', plaza:'🏛️' };
+const labelByType = { cancha:'Cancha deportiva', campo:'Campo de béisbol', parque:'Parque', plaza:'Plaza' };
 
-function makeIcon(type, size){
-  size = size || 30;
-  return L.divIcon({
-    className:'',
-    html:`<div style="
-        width:${size}px;height:${size}px;border-radius:50% 50% 50% 0;
-        background:${typeColor[type]};transform:rotate(-45deg);
-        display:flex;align-items:center;justify-content:center;
-        box-shadow:0 2px 6px rgba(0,0,0,.4);border:2px solid #fff;">
-        <span style="transform:rotate(45deg);font-size:${size*0.5}px;">${typeIconEmoji[type]}</span>
-      </div>`,
-    iconSize:[size,size],
-    iconAnchor:[size/2,size]
-  });
-}
-
-const map = L.map('map', { scrollWheelZoom:false }).setView([10.155, -67.94], 12);
-
-const normalLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution:'&copy; OpenStreetMap contributors', maxZoom:19
-}).addTo(map);
-
-const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-  attribution:'Tiles &copy; Esri', maxZoom:19
-});
-
-L.control.layers({ 'Mapa normal': normalLayer, 'Vista satelital': satLayer }, null, { position:'topright' }).addTo(map);
-
-/* Layer groups by type for the filter chips */
-const layerGroups = {
-  club:L.layerGroup().addTo(map),
-  cancha:L.layerGroup().addTo(map),
-  campo:L.layerGroup().addTo(map),
-  parque:L.layerGroup().addTo(map),
-  plaza:L.layerGroup().addTo(map)
-};
-
-/* Club markers */
-clubs.forEach(c=>{
-  const waNumber = '58' + c.telefono.replace(/^0/,'');
-  const marker = L.marker([c.lat,c.lng], { icon: makeIcon('club',34) });
-  marker.bindPopup(`
-    <div class="popup-card">
-      <span class="p-tag">Club afiliado</span>
-      <h4>${c.nombre}</h4>
-      <p>${c.ubicacion}</p>
-      <a class="wa-link" href="https://wa.me/${waNumber}" target="_blank" rel="noopener">WhatsApp</a>
-      <div style="margin-top:8px;"><a href="#${c.id}" style="font-size:.8rem;color:#003B95;font-weight:600;">Ver ficha completa →</a></div>
-    </div>`);
-  layerGroups.club.addLayer(marker);
-});
-
-/* Facility markers */
-espacios.forEach(e=>{
-  const marker = L.marker([e.lat,e.lng], { icon: makeIcon(e.t,26) });
-  const labelByType = { cancha:'Cancha deportiva', campo:'Campo de béisbol', parque:'Parque', plaza:'Plaza' };
-  marker.bindPopup(`
-    <div class="popup-card">
-      <span class="p-tag">${labelByType[e.t]}</span>
-      <h4>${e.n}</h4>
-      <p>Municipio Los Guayos, Carabobo</p>
-    </div>`);
+espacios.forEach(function(e) {
+  const marker = L.marker([e.lat, e.lng], { icon: makeIcon(e.t, 26) });
+  marker.bindPopup(
+    '<div class="popup-card">' +
+    '<span class="p-tag">' + labelByType[e.t] + '</span>' +
+    '<h4>' + e.n + '</h4>' +
+    '<p>Municipio Los Guayos, Carabobo</p>' +
+    '</div>'
+  );
   layerGroups[e.t].addLayer(marker);
 });
 
-/* Filter chips toggle */
-document.querySelectorAll('.filter-chip').forEach(chip=>{
-  chip.addEventListener('click', ()=>{
+document.querySelectorAll('.filter-chip').forEach(function(chip) {
+  chip.addEventListener('click', function() {
     const type = chip.dataset.type;
     chip.classList.toggle('active');
     if(chip.classList.contains('active')){
@@ -1123,7 +1250,6 @@ document.querySelectorAll('.filter-chip').forEach(chip=>{
   });
 });
 
-/* Boundary GeoJSON — loaded on demand */
 let statesLayer, parishesLayer;
 const GEO_BASE = 'https://raw.githubusercontent.com/jhonmalorne/ConcertacionCODERE/main/';
 
@@ -1134,7 +1260,7 @@ document.getElementById('toggleStates').addEventListener('change', async functio
         const res = await fetch(GEO_BASE + 'geoBoundaries-VEN-ADM1_simplified.geojson');
         const data = await res.json();
         statesLayer = L.geoJSON(data, {
-          style: f => {
+          style: function(f) {
             const name = (f.properties.shapeName || '').toLowerCase();
             const isCarabobo = name.includes('carabobo');
             return {
@@ -1144,7 +1270,7 @@ document.getElementById('toggleStates').addEventListener('change', async functio
             };
           }
         });
-      }catch(err){ console.error('No se pudo cargar el límite estadal', err); }
+      } catch(err){ console.error('No se pudo cargar el límite estadal', err); }
     }
     if(statesLayer) statesLayer.addTo(map);
   } else if(statesLayer){
@@ -1161,7 +1287,7 @@ document.getElementById('toggleParishes').addEventListener('change', async funct
         parishesLayer = L.geoJSON(data, {
           style: { color:'rgba(255,255,255,.25)', weight:1, fillOpacity:0 }
         });
-      }catch(err){ console.error('No se pudo cargar el límite parroquial', err); }
+      } catch(err){ console.error('No se pudo cargar el límite parroquial', err); }
     }
     if(parishesLayer) parishesLayer.addTo(map);
   } else if(parishesLayer){
